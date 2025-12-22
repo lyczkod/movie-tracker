@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MovieTracker</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        // Ustaw motyw przed załadowaniem strony
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.className = savedTheme + '-theme';
+        })();
+    </script>
+</head>
+<body class="light-theme">
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-film"></i>
+                <span>MovieTracker</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#dashboard" class="nav-link">Dashboard</a></li>
+                <li><a href="#my-list" class="nav-link">Moja Lista</a></li>
+                <li><a href="#search" class="nav-link">Wyszukaj</a></li>
+                <li><a href="#calendar" class="nav-link">Kalendarz</a></li>
+                <li><a href="#statistics" class="nav-link">Statystyki</a></li>
+                <li><a href="#challenges" class="nav-link">Wyzwania</a></li>
+                <li><a href="#profile" class="nav-link">Profil</a></li>
+                <li id="admin-nav-item" style="display: none;"><a href="#admin" class="nav-link">Panel Admina</a></li>
+                <li>
+                    <button id="theme-toggle" class="theme-toggle" title="Przełącz motyw">
+                        <i class="fas fa-adjust"></i>
+                    </button>
+                </li>
+                <li>
+                    <button id="logout-btn" class="theme-toggle" title="Wyloguj">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <!-- Dashboard Section  -->
+        <section id="dashboard" class="section active">
+            <div class="container">
+                <h1>Witaj, <span id="username">Użytkowniku</span>!</h1>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <i class="fas fa-film"></i>
+                        <div class="stat-info">
+                            <h3 id="movies-count">0</h3>
+                            <p>Obejrzane filmy</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-tv"></i>
+                        <div class="stat-info">
+                            <h3 id="series-count">0</h3>
+                            <p>Obejrzane seriale</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fa-solid fa-clock"></i>
+                        <div class="stat-info">
+                            <h3 id="movies-hours-count">0</h3>
+                            <p>Godzin filmów</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fa-regular fa-clock"></i>
+                        <div class="stat-info">
+                            <h3 id="series-hours-count">0</h3>
+                            <p>Godzin seriali</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-star"></i>
+                        <div class="stat-info">
+                            <h3 id="avg-rating">0.0</h3>
+                            <p>Średnia ocena</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="recent-activity">
+                    <h2>Ostatnie aktywności</h2>
+                    <div id="recent-list" class="activity-list">
+                        <!-- Recent activities will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- My List Section -->
+        <section id="my-list" class="section">
+            <div class="container">
+                <h1>Moja Lista</h1>
+                
+                <div class="my-list-controls">
+                    <div class="list-tabs">
+                        <button class="tab-btn active" data-status="all">Wszystkie</button>
+                        <button class="tab-btn" data-status="watched">Obejrzane</button>
+                        <button class="tab-btn" data-status="watching">Obecnie oglądane</button>
+                        <button class="tab-btn" data-status="planning">Planowane</button>
+                        <button class="tab-btn" data-status="dropped">Porzucone</button>
+                    </div>
+                    
+                    <div class="list-filters">
+                        <select id="list-type-filter">
+                            <option value="">Wszystkie typy</option>
+                            <option value="movie">Filmy</option>
+                            <option value="series">Seriale</option>
+                        </select>
+                        <select id="list-genre-filter">
+                            <option value="">Wszystkie gatunki</option>
+                            <option value="Akcja">Akcja</option>
+                            <option value="Komedia">Komedia</option>
+                            <option value="Dramat">Dramat</option>
+                            <option value="Horror">Horror</option>
+                            <option value="Sci-Fi">Sci-Fi</option>
+                        </select>
+                        <select id="list-sort">
+                            <option value="date-desc">Najnowsze</option>
+                            <option value="date-asc">Najstarsze</option>
+                            <option value="title-asc">Tytuł A-Z</option>
+                            <option value="title-desc">Tytuł Z-A</option>
+                            <option value="rating-desc">Najwyżej ocenione</option>
+                            <option value="rating-asc">Najniżej ocenione</option>
+                        </select>
+                    </div>
+                    
+                    <div class="view-controls">
+                        <button id="grid-view" class="view-btn active" data-view="grid" title="Widok siatki">
+                            <i class="fas fa-th"></i>
+                        </button>
+                        <button id="list-view" class="view-btn" data-view="list" title="Widok listy">
+                            <i class="fas fa-list"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="list-stats">
+                    <span id="list-count">0 pozycji</span>
+                    <span id="list-hours">0 godzin</span>
+                </div>
+
+                <div id="my-list-content" class="my-list-grid">
+                    <!-- User's list will be displayed here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Search Section -->
+        <section id="search" class="section">
+            <div class="container">
+                <h1>Wyszukaj filmy i seriale</h1>
+                
+                <div class="search-container">
+                    <div class="search-bar">
+                        <input type="text" id="search-input" placeholder="Wpisz tytuł filmu lub serialu...">
+                        <button id="search-btn"><i class="fas fa-search"></i></button>
+                    </div>
+                    
+                    <div class="filters">
+                        <select id="type-filter">
+                            <option value="">Wszystkie</option>
+                            <option value="movie">Filmy</option>
+                            <option value="series">Seriale</option>
+                        </select>
+                        <select id="genre-filter">
+                            <option value="">Wszystkie gatunki</option>
+                            <option value="Akcja">Akcja</option>
+                            <option value="Komedia">Komedia</option>
+                            <option value="Dramat">Dramat</option>
+                            <option value="Horror">Horror</option>
+                            <option value="Sci-Fi">Sci-Fi</option>
+                        </select>
+                        <select id="year-filter">
+                            <option value="">Wszystkie lata</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="search-results" class="results-grid">
+                    <!-- Search results will be displayed here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Calendar Section -->
+        <section id="calendar" class="section">
+            <div class="container">
+                <h1>Kalendarz premier</h1>
+                <div id="calendar-container" class="calendar">
+                    <!-- Calendar will be generated here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Statistics Section -->
+        <section id="statistics" class="section">
+            <div class="container">
+                <h1>Twoje statystyki</h1>
+                
+                <div class="charts-container">
+                    <div class="chart-card">
+                        <h3>Filmy vs Seriale</h3>
+                        <canvas id="typeChart"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <h3>Gatunki</h3>
+                        <canvas id="genreChart"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <h3>Aktywność w czasie</h3>
+                        <canvas id="timeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Profile Section -->
+        <section id="profile" class="section">
+            <div class="container">
+                <div class="profile-header">
+                    <div class="profile-info-top">
+                        <div class="avatar-container">
+                            <input type="file" id="avatar-upload" accept="image/*" style="display: none;">
+                            <div class="avatar" id="avatar-wrapper">
+                                <img id="user-avatar" src="images/default-avatar.png" alt="Avatar">
+                                <div class="avatar-overlay">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="user-details">
+                            <h1 id="profile-username">Nazwa użytkownika</h1>
+                            <p id="profile-email">email@example.com</p>
+                            <p class="profile-description" id="profile-user-description">Brak opisu</p>
+                            <p class="member-since">Członek od: <span id="member-since">2024</span></p>
+                        </div>
+                    </div>
+                    
+                    <!-- Profile Tabs -->
+                    <div class="profile-tabs">
+                        <button class="profile-tab-btn active" data-profile-tab="badges">
+                            <i class="fas fa-trophy"></i> Odznaki
+                        </button>
+                        <button class="profile-tab-btn" data-profile-tab="friends">
+                            <i class="fas fa-users"></i> Znajomi
+                        </button>
+                        <button class="profile-tab-btn" data-profile-tab="settings">
+                            <i class="fas fa-cog"></i> Ustawienia
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Badges Tab -->
+                <div id="profile-badges-tab" class="profile-tab-content active">
+                    <div class="badges-header">
+                        <h2>Moje Odznaki</h2>
+                        <a href="#badges-all" id="view-all-badges" class="view-all-link">Zobacz wszystkie <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                    <div id="badges-container" class="badges-grid">
+                        <!-- Badges will be loaded here dynamically -->
+                    </div>
+                </div>
+                
+                <!-- Friends Tab -->
+                <div id="profile-friends-tab" class="profile-tab-content">
+                    <div class="friends-header">
+                        <h2>Znajomi</h2>
+                        <button id="add-friend-btn" class="btn btn-primary">
+                            <i class="fas fa-user-plus"></i> Dodaj znajomego
+                        </button>
+                    </div>
+                    
+                    <div class="friends-stats">
+                        <div class="friend-stat">
+                            <span class="stat-number" id="friends-count">0</span>
+                            <span class="stat-label">Znajomych</span>
+                        </div>
+                        <div class="friend-stat">
+                            <span class="stat-number" id="pending-requests-count">0</span>
+                            <span class="stat-label">Oczekujących</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Friend Requests -->
+                    <div id="friend-requests-section" style="display: none;">
+                        <h3>Zaproszenia</h3>
+                        <div id="friend-requests-list" class="friends-list">
+                            <!-- Friend requests will be loaded here -->
+                        </div>
+                    </div>
+                    
+                    <!-- Friends List -->
+                    <div id="friends-section">
+                        <h3>Moi Znajomi</h3>
+                        <div id="friends-list" class="friends-list">
+                            <!-- Friends will be loaded here dynamically -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Settings Tab -->
+                <div id="profile-settings-tab" class="profile-tab-content">
+                    <h2>Ustawienia</h2>
+                    <div class="settings-container">
+                        <div class="setting-group">
+                            <h3>Profil</h3>
+                            <div class="setting-item">
+                                <label for="profile-description-input">
+                                    <i class="fas fa-pen"></i> Opis profilu
+                                </label>
+                                <textarea id="profile-description-input" rows="4" maxlength="500" placeholder="Napisz coś o sobie..."></textarea>
+                                <small class="char-count"><span id="description-char-count">0</span>/500</small>
+                            </div>
+                            <button class="btn btn-primary" id="save-description-btn">
+                                <i class="fas fa-save"></i> Zapisz opis
+                            </button>
+                        </div>
+                        
+                        <div class="setting-group">
+                            <h3>Wygląd</h3>
+                            <div class="setting-item">
+                                <label for="theme-select">
+                                    <i class="fas fa-palette"></i> Motyw aplikacji
+                                </label>
+                                <select id="theme-select">
+                                    <option value="light">Jasny</option>
+                                    <option value="dark">Ciemny</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="setting-group">
+                            <h3>Konto</h3>
+                            <button class="btn btn-secondary" id="change-password-btn">
+                                <i class="fas fa-key"></i> Zmień hasło
+                            </button>
+                            <button class="btn btn-danger" id="delete-account-btn">
+                                <i class="fas fa-exclamation-triangle"></i> Usuń konto
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- All Badges Section -->
+        <section id="badges-all" class="section">
+            <div class="container">
+                <button class="btn-back" onclick="app.showSection('profile')">
+                    <i class="fas fa-arrow-left"></i> Powrót do profilu
+                </button>
+                <div class="section-header">
+                    <h1>Wszystkie Odznaki</h1>
+                </div>
+                
+                <div class="badges-stats">
+                    <div class="badge-stat">
+                        <span class="stat-number" id="total-badges-count">0</span>
+                        <span class="stat-label">Zdobyte odznaki</span>
+                    </div>
+                    <div class="badge-stat">
+                        <span class="stat-number" id="platinum-badges-count">0</span>
+                        <span class="stat-label">Platynowe</span>
+                    </div>
+                    <div class="badge-stat">
+                        <span class="stat-number" id="gold-badges-count">0</span>
+                        <span class="stat-label">Złote</span>
+                    </div>
+                    <div class="badge-stat">
+                        <span class="stat-number" id="silver-badges-count">0</span>
+                        <span class="stat-label">Srebrne</span>
+                    </div>
+                </div>
+
+                <div id="all-badges-container" class="badges-grid-full">
+                    <!-- All badges will be loaded here -->
+                </div>
+            </div>
+        </section>
+        
+        <!-- Public Challenges Section -->
+        <section id="challenges" class="section">
+            <div class="container">
+                <button class="btn-back" onclick="app.showSection('dashboard')">
+                    <i class="fas fa-arrow-left"></i> Powrót
+                </button>
+                <div class="section-header">
+                    <h1>Wyzwania</h1>
+                </div>
+
+                <div id="challenges-container" class="challenges-list">
+                    <!-- Challenges will be loaded here -->
+                </div>
+            </div>
+        </section>
+        
+        <!-- Add Friend Modal -->
+        <div id="add-friend-modal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Dodaj znajomego</h2>
+                <div class="search-friend-container">
+                    <input type="text" id="friend-search-input" placeholder="Wyszukaj użytkownika...">
+                    <div id="friend-search-results" class="search-results">
+                        <!-- Search results will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Panel Section -->
+        <section id="admin" class="section" style="display: none;">
+            <div class="container">
+                <h1>Panel Administracyjny</h1>
+                <div class="admin-stats">
+                    <div class="admin-stat">
+                        <div class="admin-stat-label">Filmy</div>
+                        <div id="admin-total-movies-count" class="admin-stat-count">0</div>
+                    </div>
+                    <div class="admin-stat">
+                        <div class="admin-stat-label">Seriale</div>
+                        <div id="admin-total-series-count" class="admin-stat-count">0</div>
+                    </div>
+                    <div class="admin-stat">
+                        <div class="admin-stat-label">Wyzwania</div>
+                        <div id="admin-total-challenges-count" class="admin-stat-count">0</div>
+                    </div>
+                    <div class="admin-stat">
+                        <div class="admin-stat-label">Odznaki</div>
+                        <div id="admin-total-badges-count" class="admin-stat-count">0</div>
+                    </div>
+                    <div class="admin-stat">
+                        <div class="admin-stat-label">Recenzje</div>
+                        <div id="admin-total-reviews-count" class="admin-stat-count">0</div>
+                    </div>
+                </div>
+                
+                <div class="admin-tabs">
+                    <button class="admin-tab-btn active" data-tab="movies">Filmy/Seriale</button>
+                    <button class="admin-tab-btn" data-tab="challenges">Wyzwania</button>
+                    <button class="admin-tab-btn" data-tab="badges">Odznaki</button>
+                    <button class="admin-tab-btn" data-tab="reviews">Recenzje</button>
+                </div>
+
+                <!-- Movies Management Tab -->
+                <div id="admin-movies-tab" class="admin-tab-content active">
+                    <div class="admin-actions">
+                        <button id="add-movie-btn" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Dodaj film
+                        </button>
+                        <button id="delete-selected-movies-btn" class="btn btn-secondary" style="display: none;">
+                            <i class="fas fa-trash"></i> Usuń zaznaczone
+                        </button>
+                    </div>
+                    
+                    <div class="admin-table-container">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th><input type="checkbox" id="select-all-movies"></th>
+                                    <th>ID</th>
+                                    <th>Tytuł</th>
+                                    <th>Typ</th>
+                                    <th>Rok</th>
+                                    <th>Gatunek</th>
+                                    <th>Akcje</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-movies-list">
+                                <!-- Movies will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Challenges Management Tab -->
+                <div id="admin-challenges-tab" class="admin-tab-content">
+                    <div class="admin-actions">
+                        <button id="add-challenge-btn" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Dodaj wyzwanie
+                        </button>
+                        <button id="delete-selected-challenges-btn" class="btn btn-secondary" style="display: none;">
+                            <i class="fas fa-trash"></i> Usuń zaznaczone
+                        </button>
+                    </div>
+                    
+                    <div class="admin-table-container">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th><input type="checkbox" id="select-all-challenges"></th>
+                                    <th>ID</th>
+                                    <th>Nazwa</th>
+                                    <th>Typ</th>
+                                    <th>Wartość kryterium</th>
+                                    <th>Cel Srebrny</th>
+                                    <th>Cel Złoty</th>
+                                    <th>Cel Platynowy</th>
+                                    <th>Akcje</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-challenges-list">
+                                <!-- Challenges will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Badges Management Tab -->
+                <div id="admin-badges-tab" class="admin-tab-content">
+                    <div class="admin-actions">
+                        <button id="add-badge-btn" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Dodaj odznakę
+                        </button>
+                        <button id="delete-selected-badges-btn" class="btn btn-secondary" style="display: none;">
+                            <i class="fas fa-trash"></i> Usuń zaznaczone
+                        </button>
+                    </div>
+                    
+                    <div class="admin-table-container">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th><input type="checkbox" id="select-all-badges"></th>
+                                    <th>ID</th>
+                                    <th>Nazwa</th>
+                                    <th>Opis</th>
+                                    <th>Ikona</th>
+                                    <th>Akcje</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-badges-list">
+                                <!-- Badges will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Reviews Management Tab -->
+                <div id="admin-reviews-tab" class="admin-tab-content">
+                    <div class="admin-actions">
+                        <button id="delete-selected-reviews-btn" class="btn btn-secondary" style="display: none;">
+                            <i class="fas fa-trash"></i> Usuń zaznaczone
+                        </button>
+                    </div>
+                    
+                    <div class="admin-table-container">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th><input type="checkbox" id="select-all-reviews"></th>
+                                    <th>ID</th>
+                                    <th>Użytkownik</th>
+                                    <th>Film/Serial</th>
+                                    <th>Recenzja</th>
+                                    <th>Ocena</th>
+                                    <th>Data</th>
+                                    <th>Akcje</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-reviews-list">
+                                <!-- Reviews will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Movie/Series Modal -->
+    <div id="movie-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="modal-header">
+                <div class="movie-poster">
+                    <img id="modal-poster" src="" alt="Poster">
+                </div>
+            </div>
+            <div class="modal-tabs">
+                <button class="modal-tab-btn active" data-tab="info">Informacje</button>
+                <button class="modal-tab-btn" data-tab="edit">Edycja</button>
+                <button class="modal-tab-btn" id="episodes-tab-btn" data-tab="episodes" style="display: none;">Odcinki</button>
+                <button class="modal-tab-btn" data-tab="reviews">Recenzje</button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-tab-content active" id="info-tab">
+                    <h2 id="modal-title"></h2>
+                    <p id="modal-description"></p>
+                    <div class="movie-meta">
+                        <span id="modal-year"></span>
+                        <span id="modal-genre"></span>
+                        <span id="modal-duration"></span>
+                    </div>
+                    <div id="trailer-container" style="display: none;">
+                        <h3 class="trailer-title">Trailer</h3>
+                        <div class="trailer-wrapper" id="trailer-wrapper"></div>
+                    </div>
+                </div>
+                <div class="modal-tab-content" id="edit-tab">
+                    <div class="status-section">
+                        <label>Status:</label>
+                        <select id="movie-status">
+                            <option value="" disabled selected>Wybierz status</option>
+                            <option value="watched">Obejrzane</option>
+                            <option value="watching">Obecnie oglądane</option>
+                            <option value="planning">Planowane</option>
+                            <option value="dropped">Porzucone</option>
+                        </select>
+                    </div>
+                    <div class="rating-section">
+                        <label>Twoja ocena:</label>
+                        <div class="stars">
+                            <i class="fas fa-star" data-rating="1"></i>
+                            <i class="fas fa-star" data-rating="2"></i>
+                            <i class="fas fa-star" data-rating="3"></i>
+                            <i class="fas fa-star" data-rating="4"></i>
+                            <i class="fas fa-star" data-rating="5"></i>
+                        </div>
+                    </div>
+                    <div class="review-section">
+                        <label>Recenzja:</label>
+                        <textarea id="review-text" placeholder="Napisz swoją recenzję..."></textarea>
+                    </div>
+                    <div class="modal-actions">
+                        <button id="add-to-list" class="btn btn-primary">Dodaj do listy</button>
+                        <button id="update-item" class="btn btn-primary" style="display: none;">Aktualizuj</button>
+                        <button id="remove-from-list" class="btn btn-danger" style="display: none;">Usuń z listy</button>
+                    </div>
+                </div>
+                <div class="modal-tab-content" id="episodes-tab">
+                    <div id="series-seasons-container">
+                        <!-- Seasons and episodes will be loaded here -->
+                    </div>
+                </div>
+                <div class="modal-tab-content" id="reviews-tab">
+                    <div id="reviews-container">
+                        <div class="loading-reviews">
+                            <i class="fas fa-spinner fa-spin"></i> Ładowanie recenzji...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirm-modal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-body">
+                <h3 id="confirm-title" style="margin-top: 0;">Potwierdzenie</h3>
+                <p id="confirm-message"></p>
+                <div class="modal-actions" style="margin-top: 20px;">
+                    <button id="confirm-yes" class="btn btn-primary">Tak</button>
+                    <button id="confirm-no" class="btn btn-secondary">Nie</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Password Verification Modal -->
+    <div id="admin-password-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="modal-body">
+                <h3>Weryfikacja administratora</h3>
+                <p>Aby uzyskać dostęp do panelu administracyjnego, wprowadź swoje hasło:</p>
+                <form id="admin-password-form">
+                    <div class="form-group">
+                        <label>Hasło:</label>
+                        <input type="password" id="admin-password-input" required autofocus>
+                    </div>
+                    <div id="admin-password-error" class="error-message"></div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-secondary close">Anuluj</button>
+                        <button type="submit" class="btn btn-primary">Potwierdź</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Movie Modal -->
+    <div id="admin-movie-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="modal-body">
+                <h3 id="admin-movie-modal-title">Dodaj film</h3>
+                <form id="admin-movie-form">
+                    <input type="hidden" id="admin-movie-id">
+                    <div class="form-group">
+                        <label>Tytuł:</label>
+                        <input type="text" id="admin-movie-title" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Typ:</label>
+                        <select id="admin-movie-type" required>
+                            <option value="movie">Film</option>
+                            <option value="series">Serial</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="series-fields" style="display: none;">
+                        <label>Liczba sezonów:</label>
+                        <input type="number" id="admin-series-seasons" min="1" value="1">
+                        <small class="form-hint">Po zapisaniu będziesz mógł skonfigurować odcinki dla każdego sezonu osobno</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Rok/Lata:</label>
+                        <input type="text" id="admin-movie-year" placeholder="np. 2024 lub 2024-01-15 lub 2008-2013">
+                        <small class="form-hint">Dla filmów: rok (np. 2024) lub pełna data (2024-01-15). Dla seriali: zakres lat (np. 2008-2013 lub 2025-teraz). Format daty: RRRR-MM-DD</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Gatunek:</label>
+                        <input type="text" id="admin-movie-genre" placeholder="Wiele gatunków: Sci-Fi, Dramat">
+                    </div>
+                    <div class="form-group" id="duration-field">
+                        <label id="duration-label">Czas trwania (minuty):</label>
+                        <input type="number" id="admin-movie-duration" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Opis:</label>
+                        <textarea id="admin-movie-description" rows="4"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>URL plakatu:</label>
+                        <input type="text" id="admin-movie-poster">
+                    </div>
+                    <div class="form-group">
+                        <label>URL trailera:</label>
+                        <input type="text" id="admin-movie-trailer" placeholder="np. https://www.youtube.com/watch?v=...">
+                        <small class="form-hint">Link do trailera (YouTube, Vimeo, itp.)</small>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-secondary close">Anuluj</button>
+                        <button type="submit" class="btn btn-primary">Zapisz</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Season Count Modal (New) -->
+    <div id="admin-season-count-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="modal-body">
+                <h3 id="admin-season-count-modal-title">Podaj liczbę sezonów</h3>
+                <p class="modal-subtitle" id="admin-season-count-subtitle">Wprowadź liczbę sezonów dla serialu</p>
+                <form id="admin-season-count-form">
+                    <input type="hidden" id="admin-season-count-series-id">
+                    <input type="hidden" id="admin-season-count-series-title">
+                    <div class="form-group">
+                        <label for="admin-season-count-input">Liczba sezonów:</label>
+                        <input type="number" id="admin-season-count-input" min="1" max="50" required class="form-control">
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-secondary close">Anuluj</button>
+                        <button type="submit" class="btn btn-primary">Dalej</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Series Seasons Modal -->
+    <div id="admin-seasons-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="modal-body">
+                <h3 id="admin-seasons-modal-title">Konfiguracja sezonów</h3>
+                <p class="modal-subtitle">Podaj liczbę odcinków dla każdego sezonu</p>
+                <form id="admin-seasons-form">
+                    <input type="hidden" id="admin-seasons-series-id">
+                    <div id="seasons-config-container">
+                        <!-- Season inputs will be generated here -->
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-secondary close">Pomiń</button>
+                        <button type="submit" class="btn btn-primary">Zapisz sezony</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Episodes Modal -->
+    <div id="admin-episodes-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="modal-body">
+                <h3 id="admin-episodes-modal-title">Edytuj odcinki</h3>
+                <p class="modal-subtitle" id="admin-episodes-modal-subtitle">Wybierz odcinek aby go edytować lub użyj "Zapisz wszystkie"</p>
+                <div id="admin-episodes-warning" class="admin-warning" style="display:none; margin-bottom: 8px;">
+                    Kolumna <code>display_number</code> nie istnieje w bazie danych. Numeracja wyświetlana poniżej jest obliczana i nie zostanie zapisana - wykonaj migrację aby zapisywać wartości.
+                </div>
+                <form id="admin-episodes-form">
+                    <input type="hidden" id="admin-episodes-series-id">
+                    <div id="admin-episodes-list">
+                        <!-- Episodes will be loaded here -->
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-secondary close">Anuluj</button>
+                        <button type="button" id="admin-episodes-save-all" class="btn btn-primary">Zapisz wszystkie</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Challenge Modal -->
+    <div id="admin-challenge-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="modal-body">
+                <h3 id="admin-challenge-modal-title">Dodaj wyzwanie</h3>
+                <form id="admin-challenge-form">
+                    <input type="hidden" id="admin-challenge-id">
+                    <div class="form-group">
+                        <label>Nazwa:</label>
+                        <input type="text" id="admin-challenge-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Opis:</label>
+                        <textarea id="admin-challenge-description" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Typ:</label>
+                        <select id="admin-challenge-type" required>
+                            <option value="movies">Filmy</option>
+                            <option value="series">Seriale</option>
+                            <option value="both">Filmy i seriale</option>
+                            <option value="genre">Gatunek filmów/seriali</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="criteria-group" style="display: none;">
+                        <label>Nazwa gatunku:</label>
+                        <small style="display: block; color: var(--text-secondary); margin-bottom: 4px;">Wpisz nazwę gatunku (np. Horror, Komedia, Akcja)</small>
+                        <input type="text" id="admin-challenge-criteria" placeholder="np. Horror">
+                    </div>
+                    <div class="form-group">
+                        <label>Cel srebrny:</label>
+                        <input type="number" id="admin-challenge-target-silver" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Cel złoty:</label>
+                        <input type="number" id="admin-challenge-target-gold" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Cel platynowy:</label>
+                        <input type="number" id="admin-challenge-target-platinum" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Data rozpoczęcia:</label>
+                        <input type="date" id="admin-challenge-start">
+                    </div>
+                    <div class="form-group">
+                        <label>Data zakończenia:</label>
+                        <input type="date" id="admin-challenge-end">
+                    </div>
+                    <div class="form-group">
+                        <label>Odznaka srebrna (ID):</label>
+                        <input type="number" id="admin-challenge-badge-silver">
+                    </div>
+                    <div class="form-group">
+                        <label>Odznaka złota (ID):</label>
+                        <input type="number" id="admin-challenge-badge-gold">
+                    </div>
+                    <div class="form-group">
+                        <label>Odznaka platynowa (ID):</label>
+                        <input type="number" id="admin-challenge-badge-platinum">
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-secondary close">Anuluj</button>
+                        <button type="submit" class="btn btn-primary">Zapisz</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Badge Modal -->
+    <div id="admin-badge-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="modal-body">
+                <h3 id="admin-badge-modal-title">Dodaj odznakę</h3>
+                <form id="admin-badge-form">
+                    <input type="hidden" id="admin-badge-id">
+                    <div class="form-group">
+                        <label>Nazwa:</label>
+                        <input type="text" id="admin-badge-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Opis:</label>
+                        <textarea id="admin-badge-description" rows="3" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Poziom (Tier):</label>
+                        <select id="admin-badge-level" required>
+                            <option value="" disabled selected>Wybierz poziom</option>
+                            <option value="platinum">Platynowy</option>
+                            <option value="gold">Złoty</option>
+                            <option value="silver">Srebrny</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Ikona odznaki:</label>
+                        <small style="color: var(--text-secondary); display: block; margin-bottom: 8px;">
+                            Możesz wybrać plik lub podać URL. Jeśli nie wybierzesz, zostanie użyta domyślna ikona.
+                        </small>
+                        <input type="file" id="admin-badge-file" accept="image/*" style="margin-bottom: 8px;">
+                        <input type="text" id="admin-badge-icon" placeholder="https://example.com/badge.png">
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-secondary close">Anuluj</button>
+                        <button type="submit" class="btn btn-primary">Zapisz</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/app.js"></script>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container footer-content">
+            <div class="footer-left">
+                <span>&copy; <span id="footer-year"></span> Dawid Łyczko</span>
+            </div>
+            <div class="footer-right">
+                <span>Plakaty filmów pochodzą z <a href="https://www.themoviedb.org/" target="_blank" rel="noopener noreferrer">TMDb (The Movie Database)</a></span>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
