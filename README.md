@@ -57,7 +57,7 @@ Stworzenie intuicyjnej platformy, która:
 - **Porównywanie statystyk** - konkurowanie z przyjaciółmi
 
 ### 📊 Dashboard i Statystyki
-- **Liczba obejrzanych filmów** - filtrowanie po typie (film/serial)
+- **Liczba obejrzanych filmów** - filtrowanie po typie (film lub serial)
 - **Całkowity czas** - suma godzin spędzonych na oglądaniu
 - **Średnia ocena** - automatycznie wyliczana średnia z ocen
 - **Wykres aktywności** - wizualizacja aktywności w czasie
@@ -145,3 +145,4 @@ showNotification(message, type, autoHide)
 MIT License - szczegóły w pliku `LICENSE`
 
 ---
+
