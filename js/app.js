@@ -5793,6 +5793,8 @@ class MovieTracker {
     
     // Escape HTML dla bezpieczeństwa
     escapeHtml(text) {
+        if (text == null) return '';
+        const str = String(text);
         const map = {
             '&': '&amp;',
             '<': '&lt;',
@@ -5800,7 +5802,7 @@ class MovieTracker {
             '"': '&quot;',
             "'": '&#039;'
         };
-        return text.replace(/[&<>"']/g, m => map[m]);
+        return str.replace(/[&<>"']/g, m => map[m]);
     }
     
 }
