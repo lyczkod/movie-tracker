@@ -3541,7 +3541,7 @@ class MovieTracker {
         const yearFilter = document.getElementById('year-filter');
         const currentYear = new Date().getFullYear();
         
-        for (let year = currentYear; year >= 1990; year--) {
+        for (let year = currentYear; year >= 1900; year--) {
             const option = document.createElement('option');
             option.value = year;
             option.textContent = year;
