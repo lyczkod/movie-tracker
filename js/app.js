@@ -3164,6 +3164,9 @@ class MovieTracker {
                     }
                 }
             }
+            
+            // Przeładuj dane filmów, aby zaktualizować postęp
+            await this.loadMoviesData();
         } catch (error) {
             console.error('Error marking all episodes as watched:', error);
             // Nie pokazuj notyfikacji błędu - to operacja w tle
@@ -3914,6 +3917,11 @@ class MovieTracker {
 
             // Przeładuj dane filmów, aby zaktualizować postęp
             await this.loadMoviesData();
+            
+            // Jeśli użytkownik jest w sekcji Moja Lista, odśwież jej widok
+            if (this.currentSection === 'my-list') {
+                this.displayMyList(this.currentListStatus);
+            }
             
         } catch (error) {
             console.error('Error toggling episode:', error);
