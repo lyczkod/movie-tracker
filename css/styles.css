@@ -398,7 +398,7 @@ h3 {
     flex: 1;
     padding: 1rem;
     border: 2px solid var(--border-color);
-    border-radius: 8px 0 0 8px;
+    border-radius: 8px;
     font-size: 1rem;
     background-color: var(--surface-color);
     color: var(--text-color);
