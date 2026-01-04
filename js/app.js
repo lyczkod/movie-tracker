@@ -4102,6 +4102,15 @@ class MovieTracker {
             const password = document.getElementById('password').value;
             const nickname = document.getElementById('nickname').value;
 
+            // Walidacja email przy rejestracji
+            if (!isLogin) {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(emailOrUsername)) {
+                    this.showAuthError('Podaj poprawny adres e-mail');
+                    return;
+                }
+            }
+
             // Walidacja hasła przy rejestracji
             if (!isLogin && password.length < 6) {
                 this.showAuthError('Hasło musi mieć minimum 6 znaków');
@@ -4150,6 +4159,7 @@ class MovieTracker {
                 toggleLink.textContent = 'Utwórz konto';
                 nicknameInput.style.display = 'none';
                 nicknameInput.required = false;
+                emailOrUsernameInput.type = 'text';
                 emailOrUsernameInput.placeholder = 'Email lub nazwa użytkownika';
                 passwordHint.style.display = 'none';
             } else {
@@ -4159,6 +4169,7 @@ class MovieTracker {
                 toggleLink.textContent = 'Zaloguj się';
                 nicknameInput.style.display = 'block';
                 nicknameInput.required = true;
+                emailOrUsernameInput.type = 'email';
                 emailOrUsernameInput.placeholder = 'Adres email';
                 passwordHint.style.display = 'block';
             }

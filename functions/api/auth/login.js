@@ -19,6 +19,17 @@ export async function onRequestPost(context) {
       });
     }
 
+    // Opcjonalna walidacja formatu email - jeśli użytkownik podał coś z @, musi być poprawny email
+    if (emailOrUsername.includes('@')) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(emailOrUsername)) {
+        return new Response(JSON.stringify({ error: 'Invalid email format' }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
+    }
+
     // Znajdź użytkownika po emailu lub nicku
     const user = await env.db.prepare('SELECT * FROM users WHERE email = ? OR nickname = ?').bind(emailOrUsername, emailOrUsername).first();
     if (!user) {

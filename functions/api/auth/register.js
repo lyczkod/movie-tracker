@@ -19,6 +19,15 @@ export async function onRequestPost(context) {
       });
     }
 
+    // Walidacja formatu email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return new Response(JSON.stringify({ error: 'Invalid email format' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+
     // Sprawdź czy użytkownik istnieje
     const existingUser = await env.db.prepare('SELECT id FROM users WHERE email = ?').bind(email).first();
     if (existingUser) {
