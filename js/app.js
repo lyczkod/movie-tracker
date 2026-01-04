@@ -8,6 +8,7 @@ class MovieTracker {
         this.currentSection = 'dashboard';
         this.adminVerified = false;
         this.currentView = 'grid'; // Śledź aktualny tryb widoku
+        this.currentListStatus = 'all'; // Śledź aktualnie wybrany status w Mojej Liście
         this.tokenCheckInterval = null; // Sprawdzacz wygaśnięcia tokenu
         
         // Właściwości kalendarza
@@ -274,21 +275,21 @@ class MovieTracker {
         const listTypeFilter = document.getElementById('list-type-filter');
         if (listTypeFilter) {
             listTypeFilter.addEventListener('change', () => {
-                this.displayMyList();
+                this.displayMyList(this.currentListStatus);
             });
         }
 
         const listGenreFilter = document.getElementById('list-genre-filter');
         if (listGenreFilter) {
             listGenreFilter.addEventListener('change', () => {
-                this.displayMyList();
+                this.displayMyList(this.currentListStatus);
             });
         }
 
         const listSort = document.getElementById('list-sort');
         if (listSort) {
             listSort.addEventListener('change', () => {
-                this.displayMyList();
+                this.displayMyList(this.currentListStatus);
             });
         }
 
@@ -393,7 +394,7 @@ class MovieTracker {
         if (sectionName === 'statistics') {
             this.loadCharts();
         } else if (sectionName === 'my-list') {
-            this.displayMyList();
+            this.displayMyList(this.currentListStatus);
         } else if (sectionName === 'profile') {
             this.loadProfileData();
         } else if (sectionName === 'challenges') {
@@ -2171,7 +2172,7 @@ class MovieTracker {
         
         this.updateStats();
         this.displayRecentActivity();
-        this.displayMyList();
+        this.displayMyList(this.currentListStatus);
         // Populate the genre filter on the search page based on the user's movies
         try { this.populateGenreFilterFromList(this.watchedMovies); } catch (e) { /* ignore */ }
         // Refresh global genres as well (handles admin updates/new entries)
@@ -3625,6 +3626,8 @@ class MovieTracker {
     }
 
     filterMyList(status) {
+        // Zapisz aktualnie wybrany status
+        this.currentListStatus = status;
         // Filtruj listę na podstawie statusu
         this.displayMyList(status);
         console.log('Filtering list by status:', status);
@@ -3646,7 +3649,7 @@ class MovieTracker {
             }
             
             // Przerysuj listę z nowym trybem widoku
-            this.displayMyList();
+            this.displayMyList(this.currentListStatus);
         }
         
         console.log('Changed view mode to:', viewMode);
