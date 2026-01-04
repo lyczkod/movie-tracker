@@ -144,13 +144,7 @@ class MovieTracker {
         }
 
         // Funkcjonalność wyszukiwania
-        const searchBtn = document.getElementById('search-btn');
         const searchInput = document.getElementById('search-input');
-        if (searchBtn) {
-            searchBtn.addEventListener('click', () => {
-                this.performSearch();
-            });
-        }
 
         if (searchInput) {
             // Wyszukiwanie po naciśnięciu Enter
