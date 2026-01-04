@@ -119,6 +119,21 @@ export async function onRequest(context) {
         }
       }
       
+      // Oblicz średnią ocenę z recenzji
+      let avgRating = 0;
+      try {
+        const reviewsRes = await env.db.prepare(`
+          SELECT AVG(rating) as avg_rating, COUNT(*) as review_count
+          FROM reviews
+          WHERE movie_id = ?
+        `).bind(row.id).first();
+        if (reviewsRes && reviewsRes.review_count > 0 && reviewsRes.avg_rating !== null) {
+          avgRating = Math.round(reviewsRes.avg_rating * 10) / 10; // Zaokrąglij do 1 miejsca po przecinku
+        }
+      } catch (e) {
+        console.warn('Could not compute avg rating for search:', e);
+      }
+      
       return {
         id: `db_${row.id}`,
         title: row.title,
@@ -135,7 +150,7 @@ export async function onRequest(context) {
         avgEpisodeLength: avgEpisodeLength,
         totalSeasons: row.total_seasons || null,
         totalEpisodes: row.total_episodes || null,
-        rating: 0,
+        rating: avgRating,
         status: 'planning',
         watchedDate: new Date().toISOString().split('T')[0]
       };
