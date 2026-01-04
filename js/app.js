@@ -4000,6 +4000,15 @@ class MovieTracker {
                 if (response.ok) {
                     const data = await response.json();
                     this.currentUser = data.user;
+                    
+                    // Synchronizuj motyw z preferencji użytkownika, jeśli nie ma w localStorage
+                    const userTheme = data.user && data.user.theme_preference ? data.user.theme_preference : 'light';
+                    const currentTheme = localStorage.getItem('theme');
+                    if (!currentTheme || currentTheme !== userTheme) {
+                        localStorage.setItem('theme', userTheme);
+                        this.changeTheme(userTheme);
+                    }
+                    
                     // Uruchom sprawdzacz wygaśnięcia tokenu
                     this.startTokenExpirationChecker();
                 } else {
@@ -4133,6 +4142,10 @@ class MovieTracker {
                     this.authToken = data.token;
                     this.currentUser = data.user;
                     localStorage.setItem('movieTrackerToken', this.authToken);
+                    
+                    // Synchronizuj motyw z preferencji użytkownika
+                    const userTheme = data.user && data.user.theme_preference ? data.user.theme_preference : 'light';
+                    localStorage.setItem('theme', userTheme);
                     
                     // Reload page to show main app
                     location.reload();

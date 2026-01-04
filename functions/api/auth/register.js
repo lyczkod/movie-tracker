@@ -50,7 +50,7 @@ export async function onRequestPost(context) {
     const token = await generateSimpleToken(userId, email);
 
     return new Response(JSON.stringify({
-      user: { id: userId, nickname, email },
+      user: { id: userId, nickname, email, theme_preference: 'light' },
       token
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
