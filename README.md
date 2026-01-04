@@ -122,7 +122,7 @@ showNotification(message, type, autoHide)
 ## 🔒 Bezpieczeństwo
 
 ### Autoryzacja
-- **JWT Tokens** - Bearer authentication
+- **Base64** - Bearer authentication
 - **Password Hashing** - bezpieczne hashowanie haseł
 - **Session Management** - zarządzanie sesjami
 
@@ -135,8 +135,8 @@ showNotification(message, type, autoHide)
 ## 👨‍💻 Autor
 
 **LRooy**
-- GitHub: [@LyRooy](https://github.com/LyRooy)
-- Projekt: Praca inżynierska - Politechnika Częstochowska
+- GitHub: [@Dawid Łyczko](https://github.com/lyczkod)
+- Projekt: Praca inżynierska
 
 ---
 
@@ -145,4 +145,5 @@ showNotification(message, type, autoHide)
 MIT License - szczegóły w pliku `LICENSE`
 
 ---
+
 
