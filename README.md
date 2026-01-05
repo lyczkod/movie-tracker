@@ -85,58 +85,9 @@ Stworzenie intuicyjnej platformy, która:
 
 ---
 
-
-## 🎨 Funkcjonalności
-
-### 1. System Śledzenia Odcinków
-```javascript
-// Automatyczna aktualizacja statusu serialu
-- 0 odcinków → status: 'planning'
-- 1+ odcinków → status: 'watching'
-- Wszystkie odcinki → status: 'watched'
-```
-
-### 2. Inteligentne Wyszukiwanie
-- Debouncing (300ms)
-- Podgląd posters
-- Automatyczne rozróżnianie film/serial
-
-### 3. System Notyfikacji
-```javascript
-showNotification(message, type, autoHide)
-// type: 'success', 'info', 'error'
-// autoHide: true/false
-```
-
-### 4. Responsywność
-- Desktop: pełna funkcjonalność
-- Tablet: optymalizowany layout
-- Mobile: uproszczony interfejs
-
-### 5. Motywy
-- Jasny motyw
-- Ciemny motyw
-
----
-
-## 🔒 Bezpieczeństwo
-
-### Autoryzacja
-- **Base64** - Bearer authentication
-- **Password Hashing** - bezpieczne hashowanie haseł
-- **Session Management** - zarządzanie sesjami
-
-### Walidacja
-- **Input Sanitization** - czyszczenie danych wejściowych
-- **SQL Injection Protection** - prepared statements
-- **XSS Protection** - escape HTML
-
-
 ## 👨‍💻 Autor
 
-**LRooy**
-- GitHub: [@Dawid Łyczko](https://github.com/lyczkod)
-- Projekt: Praca inżynierska
+Dawid Łyczko
 
 ---
 

@@ -47,7 +47,7 @@ class MovieTracker {
             document.body.classList.add('transitions-enabled');
         }, 100);
         
-        // Set footer year
+        // Ustaw bieżący rok w stopce
         try {
             const yearEl = document.getElementById('footer-year');
             if (yearEl) yearEl.textContent = new Date().getFullYear();
@@ -69,7 +69,7 @@ class MovieTracker {
         }
     }
 
-    // Populate select boxes with provided array of normalized genre strings
+    // Wypełnij pola wyboru gatunków na podstawie podanej tablicy wartości
     populateGenreFilterFromValues(values) {
         if (!Array.isArray(values)) return;
         const selectIds = ['genre-filter', 'list-genre-filter'];
@@ -567,7 +567,7 @@ class MovieTracker {
         // Zakładki profilu
         document.querySelectorAll('.profile-tab-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                // Use currentTarget so inner elements (icons/spans) won't break behavior
+                // Użyj currentTarget, aby kliknięcia wewnętrznych elementów (ikony/spany) nie przerywały działania
                 const el = e.currentTarget || e.target.closest('.profile-tab-btn');
                 const tabName = el?.dataset?.profileTab;
                 if (!tabName) return;
@@ -685,9 +685,9 @@ class MovieTracker {
         if (activeBtn) activeBtn.classList.add('active');
         if (activeContent) activeContent.classList.add('active');
 
-        // Load content for specific tabs to ensure UI is up-to-date
+        // Załaduj zawartość dla wybranych zakładek, aby interfejs był aktualny
         if (tabName === 'friends') {
-            // Load both friends and incoming requests for friends tab
+            // Załaduj listę znajomych oraz zaproszenia do znajomych
             this.loadFriends();
             this.loadFriendRequests();
         } else if (tabName === 'badges') {
@@ -1160,23 +1160,23 @@ class MovieTracker {
         return text.substr(0, max - 1).trim() + '…';
     }
 
-    // Helper: split and normalize comma/pipe/separator genres stored in DB
+    // Rozdziel i znormalizuj gatunki rozdzielone przecinkami, średnikami lub pionowymi kreskami, przechowywane w bazie danych
     parseGenres(genreField) {
         if (!genreField) return [];
         if (Array.isArray(genreField)) {
-            // Flatten array values and normalize each entry
+            // Spłaszcz tablicę i znormalizuj każdy element
             const arr = genreField.map(g => (typeof g === 'string' ? g : '')).filter(Boolean);
             if (arr.length === 0) return [];
-            // Map each string entry through normal parser to merge tokens
+            // Przetwórz każdy element jako osobny ciąg znaków, aby połączyć tokeny
             const tokens = arr.map(s => {
                 return this.parseGenres(s);
             }).flat();
             return Array.from(new Set(tokens));
         }
         if (typeof genreField !== 'string') return [];
-        // Split on common separators: comma, semicolon, pipe
+        // Podziel według przecinków, średników lub pionowych kresek
         const parts = genreField.split(/[,;|]+/).map(s => s.trim()).filter(Boolean);
-        // Normalize common values (e.g., Science_fiction -> Sci-Fi) and drop underscores
+        // Normalizuj popularne wartości (np. Science_fiction -> Sci-Fi) i usuń podkreślenia
         const map = {
             'science_fiction': 'Sci-Fi',
             'science fiction': 'Sci-Fi',
@@ -1188,7 +1188,7 @@ class MovieTracker {
             'horror': 'Horror',
             'akcja': 'Akcja'
         };
-        // Normalize, map, and dedupe
+        // Znormalizuj i usuń duplikaty
         const normalized = parts.map(p => {
             const key = p.toLowerCase().replace(/_/g, ' ').trim();
             return map[key] || p.replace(/_/g, ' ');
@@ -1196,7 +1196,7 @@ class MovieTracker {
         return Array.from(new Set(normalized));
     }
 
-    // Case-insensitive genre compare: returns true when 'filter' is in item.genre string
+    // Porównanie gatunków bez rozróżniania wielkości liter: zwraca true, gdy 'filter' znajduje się w ciągu gatunków item
     genreMatches(itemGenre, filterGenre) {
         if (!filterGenre) return true;
         if (!itemGenre) return false;
@@ -1366,7 +1366,7 @@ class MovieTracker {
             console.log('[searchUsers] Response status:', response.status);
 
             if (!response.ok) {
-                // Jeśli brak autoryzacji, pokaż przyjazny komunikat
+                // Jeśli brak autoryzacji, pokaż komunikat
                 if (response.status === 401) {
                     if (resultsContainer) resultsContainer.innerHTML = '<p class="search-error">Wymagana autoryzacja — zaloguj się.</p>';
                     console.warn('[searchUsers] Unauthorized (401)');
@@ -1458,7 +1458,7 @@ class MovieTracker {
             }
             return '<span class="friendship-status pending">Oczekujące</span>';
         } else if (status === 'rejected') {
-            // Show rejected and allow resending + confirm rejection
+            // Jeśli odrzucenie zostało wykonane przez nas, pozwól na ponowne wysłanie
             if (friendshipId) {
                 return `<span class="friendship-status rejected">Odrzucone</span> <button class="btn btn-secondary btn-sm" onclick="app.dismissRejected(${friendshipId}, ${user.id})">Potwierdź odrzucenie</button> <button class="btn btn-primary btn-sm" onclick="app.sendFriendRequest(${user.id})">Wyślij ponownie</button>`;
             }
@@ -1472,7 +1472,7 @@ class MovieTracker {
 
     async sendFriendRequest(userId) {
         try {
-            // Optimistic UI update for search result button
+            // Wyłącz przycisk wysyłania, jeśli dostępny
             try {
                 const el = document.querySelector(`.user-search-item[data-user-id="${userId}"]`);
                 if (el) {
@@ -1509,7 +1509,7 @@ class MovieTracker {
             if (this.currentSection === 'profile') {
                 await this.loadProfileData();
             }
-            // If profile modal for that user is open, reload it to update controls
+            // Jeśli modal profilu znajomego jest otwarty, przeładuj go, aby zaktualizować kontrolki
             if (document.getElementById('friend-profile-modal')) {
                 await this.viewFriendProfile(userId);
             }
@@ -1521,7 +1521,7 @@ class MovieTracker {
             }
         } catch (error) {
             console.error('Error sending friend request:', error);
-            // Re-enable sending button if available
+            // Przywróć przycisk dodawania w przypadku błędu
             try {
                 const el = document.querySelector(`.user-search-item[data-user-id="${userId}"]`);
                 if (el) {
@@ -1560,7 +1560,7 @@ class MovieTracker {
                 this.loadFriends(),
                 this.loadFriendRequests()
             ]);
-            // If profile modal is open for this user, reload it
+            // Jeżeli otwarty był profil, odśwież dane profilu
             if (userId && document.getElementById('friend-profile-modal')) {
                 await this.viewFriendProfile(userId);
             }
@@ -1644,7 +1644,7 @@ class MovieTracker {
         }
     }
 
-    // Dismiss a 'rejected' friendship without confirmation and refresh UI
+    // Potwierdź odrzucenie zaproszenia, aby umożliwić ponowne wysłanie
     async dismissRejected(friendshipId, userId) {
         try {
             const response = await fetch('/api/friends', {
@@ -1663,14 +1663,14 @@ class MovieTracker {
                 this.loadFriends(),
                 this.loadFriendRequests(),
             ]);
-            // If search is open and query exists, refresh search results
+            // Odśwież wyniki wyszukiwania, jeśli są otwarte
             const qInput = document.getElementById('friend-search-input');
             if (qInput && qInput.value && qInput.value.length > 1) {
                 await this.searchUsers(qInput.value);
             }
-            // If modal is open for this user, re-open to refresh controls; else ensure profile data is refreshed for current user
+            // Jeśli modal profilu znajomego jest otwarty, przeładuj go, aby zaktualizować kontrolki; w przeciwnym razie upewnij się, że dane profilu są odświeżone dla bieżącego użytkownika
             if (document.getElementById('friend-profile-modal')) {
-                // re-open profile for the same userId to refresh buttons
+                // ponownie otwórz profil dla tego samego userId, aby odświeżyć przyciski
                 await this.viewFriendProfile(userId);
             } else if (this.currentSection === 'profile') {
                 await this.loadProfileData();
@@ -1694,7 +1694,7 @@ class MovieTracker {
             });
 
             if (!response.ok) {
-                // Try to extract a helpful error message from the server
+                // Spróbuj wyodrębnić komunikat o błędzie z odpowiedzi JSON
                 let errMsg = 'Nie udało się pobrać profilu użytkownika';
                 try {
                     const json = await response.json();
@@ -1713,7 +1713,7 @@ class MovieTracker {
     }
 
     showFriendProfileModal(profile) {
-        // Defensive defaults in case some fields are missing
+        // Normalizuj dane profilu
         profile = profile || {};
         profile.badges = Array.isArray(profile.badges) ? profile.badges : (profile.badges || []);
         profile.recentActivity = Array.isArray(profile.recentActivity) ? profile.recentActivity : (profile.recentActivity || []);
@@ -1837,16 +1837,16 @@ class MovieTracker {
 
         // Zamknij modal po kliknięciu poza nim
         const modal = document.getElementById('friend-profile-modal');
-        // Ensure it's visible including for cases where .active class may not be applied by CSS
+        // Pokaż modal (użyj display block zamiast klasy, aby uniknąć konfliktów z animacjami)
         try { modal.style.display = 'block'; } catch (e) {}
-        // Prevent background scrolling and focus the modal content for accessibility
+        // Zablokuj przewijanie tła
         try { document.body.style.overflow = 'hidden'; } catch (e) {}
         const modalContent = modal.querySelector('.modal-content');
         if (modalContent) {
             modalContent.setAttribute('tabindex', '-1');
             modalContent.focus();
         }
-        // Add a mobile marker class so CSS can further adapt if needed
+        // Dostosuj dla urządzeń mobilnych
         if (window.innerWidth <= 520) modal.classList.add('mobile');
         modal.addEventListener('click', (e) => {
             if (e.target === modal) {
@@ -1870,10 +1870,10 @@ class MovieTracker {
                         <button class="btn btn-secondary" onclick="app.rejectFriendRequest(${f.id}, ${profile.id})">Odrzuć</button>
                     `;
                 }
-                // 'sent' direction
+                // 'sent' 
                 return `<span class="friendship-status pending">Oczekujące</span> <button class="btn btn-danger" onclick="app.removeFriend(${f.id}, 'invitation')">Anuluj</button>`;
             case 'rejected':
-                // allow removing the 'rejected' entry so it can be resent later
+                // Pozwól na ponowne wysłanie zaproszenia
                 return `<span class="friendship-status rejected">Odrzucone</span> <button class="btn btn-secondary" onclick="app.dismissRejected(${f.id}, ${profile.id})">Potwierdź odrzucenie</button> <button class="btn btn-primary" onclick="app.sendFriendRequest(${profile.id})">Wyślij ponownie</button>`;
             case 'accepted':
                 // Nie pokazujemy nic dla znajomych - przycisk jest w sekcji profilu
@@ -2145,8 +2145,8 @@ class MovieTracker {
                     return {
                         ...item,
                         year: normalized || null,
-                        poster: poster,  // Save the poster URL
-                        poster_url: poster,  // Save as poster_url too
+                        poster: poster,  // Zapisz jako poster
+                        poster_url: poster,  // Zapisz jako poster_url w razie potrzeby
                         description: item.description || '',
                         release_date: item.release_date || null,
                         avgEpisodeLength: avgEp ? Number(avgEp) : null,
@@ -2167,24 +2167,24 @@ class MovieTracker {
         this.updateStats();
         this.displayRecentActivity();
         this.displayMyList(this.currentListStatus);
-        // Populate the genre filter on the search page based on the user's movies
+        // Wypełnij filtry gatunków na podstawie załadowanych filmów
         try { this.populateGenreFilterFromList(this.watchedMovies); } catch (e) { /* ignore */ }
-        // Refresh global genres as well (handles admin updates/new entries)
+        // Odśwież globalne gatunki również (obsługuje aktualizacje/nowe wpisy administratora)
         try { await this.loadGenres(); } catch (e) { /* ignore */ }
     }
 
-    // Populate `#genre-filter` with unique genres found in the provided list (adds to existing options, ensures proper labels)
+    // Wypełnij `#genre-filter` unikalnymi gatunkami znalezionymi na podstawie podanej listy (dodaje do istniejących opcji, zapewnia odpowiednie etykiety)
     populateGenreFilterFromList(list) {
         if (!Array.isArray(list)) return;
         const selectIds = ['genre-filter', 'list-genre-filter'];
         const found = new Set();
         list.forEach(item => {
             const genres = this.parseGenres(item.genre || '');
-            // Normalize and dedupe per item
+            // Normalizuj i dodaj do zbioru
             genres.map(g => g.trim()).filter(Boolean).forEach(g => found.add(g));
         });
 
-        // Insert new options (keep order: 'All' stays on top)
+        // Sortuj alfabetycznie i dodaj do selectów
         const values = Array.from(found).sort((a,b) => a.localeCompare(b, 'pl'));
         selectIds.forEach(id => {
             const genreSelect = document.getElementById(id);
@@ -2270,7 +2270,7 @@ class MovieTracker {
                 poster = `https://placehold.co/200x300/cccccc/666666/png?text=${encodeURIComponent(item.title || 'Movie')}`;
             }
 
-            // Extract year from release_date or year field
+            // Wyodrębnij rok z pola release_date lub year
             let displayYear = '';
             if (item.year) {
                 if (typeof item.year === 'string') {
@@ -2299,7 +2299,7 @@ class MovieTracker {
                 ? (item.duration ? `${item.duration} min` : 'Film')
                 : `${seasons ? seasons + ' sez.' : 'Serial'} • ${episodes ? episodes + ' odc.' : ''}${avg ? ' • śr. ' + avg + ' min' : ''}`;
 
-            // Debug: warn if item lacks duration for movies or years
+            // Debugowanie brakujących danych
             if (item.type === 'movie' && !item.duration) {
                 console.debug('Movie missing duration:', item.id, item.title);
             }
@@ -2561,7 +2561,7 @@ class MovieTracker {
 
         if (results.length === 0) {
             resultsContainer.innerHTML = '<p>Nie znaleziono wyników.</p>';
-            // Update genre filter available options from empty search (no-op)
+            // Aktualizuj filtry gatunków nawet jeśli brak wyników
             this.populateGenreFilterFromList(results);
             return;
         }
@@ -2605,13 +2605,13 @@ class MovieTracker {
             resultsContainer.appendChild(movieCard);
         });
 
-        // Add any missing genre options to the search filters so users can refine
+        // Aktualizuj filtry gatunków nawet jeśli brak wyników
         try { this.populateGenreFilterFromList(results); } catch (e) { /* ignore */ }
     }
 
     async openMovieModal(movie, isEdit = false) {
         const modal = document.getElementById('movie-modal');
-        // Try to fetch full movie details from API to ensure we have poster, year, description, duration
+        // Spróbuj pobrać pełne dane filmu z API, jeśli dostępne
         try {
             try {
                 let id = movie.id;
@@ -2620,7 +2620,7 @@ class MovieTracker {
                     const res = await fetch(`/api/movies/${id}`, { headers: this.getAuthHeaders() });
                     if (res.ok) {
                         const full = await res.json();
-                        // Merge known fields from API into the movie object
+                        // Scal dane filmu
                         movie = { ...movie, ...full };
                     }
                 }
@@ -2636,12 +2636,12 @@ class MovieTracker {
         document.getElementById('modal-title').textContent = movie.title;
         document.getElementById('modal-description').textContent = movie.description && movie.description.trim() !== '' ? movie.description : 'Brak opisu';
         
-            // Extract year from release_date or use year field directly
+            // Wyodrębnij rok z release_date lub użyj pola year bezpośrednio
         let displayYear = '';
         if (typeof movie.year === 'number' && this.safeYear(movie.year)) {
             displayYear = String(movie.year);
         } else if (typeof movie.year === 'string') {
-            // Try to extract year from date string (YYYY-MM-DD or just YYYY)
+            // Spróbuj wyodrębnić rok z ciągu daty (YYYY-MM-DD lub tylko YYYY)
             const yearMatch = movie.year.match(/^(\d{4})/);
             if (yearMatch) {
                 displayYear = yearMatch[1];
@@ -2652,7 +2652,7 @@ class MovieTracker {
             const rawYear = movie.release_date || movie.releaseDate || null;
             if (rawYear) {
                 const rawStr = String(rawYear);
-                // If it's a series and the release_date is a range (contains hyphen), use the full range string
+                // Jeśli to serial i release_date jest zakresem (zawiera myślnik), użyj pełnego ciągu zakresu
                 if (movie.type === 'series' && /[-–—]/.test(rawStr)) {
                     displayYear = rawStr;
                 } else {
@@ -2667,7 +2667,7 @@ class MovieTracker {
         }
         
         document.getElementById('modal-year').textContent = displayYear || '—';
-        // Normalize multi-genre field for display
+        // Normalizuj i wyświetl gatunki
         const genreDisplay = Array.isArray(movie.genre) ? movie.genre.join(', ') : (movie.genre || '');
         document.getElementById('modal-genre').textContent = this.parseGenres(genreDisplay).join(', ');
         
@@ -2699,7 +2699,7 @@ class MovieTracker {
                             const data = await res.json();
                             const sCount = data.series?.totalSeasons || data.series?.totalSeasons || (Array.isArray(data.seasons) ? data.seasons.length : null);
                             const eCount = data.series?.totalEpisodes || data.series?.totalEpisodes || (Array.isArray(data.seasons) ? data.seasons.reduce((acc, s) => acc + (Array.isArray(s.episodes) ? s.episodes.length : 0), 0) : null);
-                            // Compute avg from episodes durations
+                            // Oblicz średnią długość odcinków
                             let sum = 0, cnt = 0;
                             if (Array.isArray(data.seasons)) {
                                 data.seasons.forEach(s => {
@@ -2711,9 +2711,9 @@ class MovieTracker {
                             const computedAvg = cnt > 0 ? Math.round(sum / cnt) : null;
                             avg = avg || computedAvg;
 
-                            // update modal and currentMovie
+                            // Ustaw informacje w modalu
                             setModalSeriesInfo(sCount, eCount, avg);
-                            // attach seasons to movie for later use
+                            // Dołącz dane do obiektu movie na przyszłość
                             try { movie.seasons = data.seasons || movie.seasons; } catch {}
                             movie.totalSeasons = sCount || movie.totalSeasons;
                             movie.totalEpisodes = eCount || movie.totalEpisodes;
@@ -3024,7 +3024,7 @@ class MovieTracker {
 
             if (response.ok) {
                 const result = await response.json();
-                // Reload movies data to refresh the list
+                // Przeładuj dane filmów, aby odświeżyć listę
                 await this.loadMoviesData();
                 this.closeModal();
                 
@@ -3121,7 +3121,7 @@ class MovieTracker {
                 throw new Error(errorData.error || 'Failed to update movie');
             }
         } catch (error) {
-            console.error('Error updating movie:', error);
+            console.error('Błąd podczas aktualizacji filmu:', error);
             this.showNotification('Błąd podczas aktualizacji filmu. Spróbuj ponownie.');
         }
     }
@@ -3162,7 +3162,7 @@ class MovieTracker {
             // Przeładuj dane filmów, aby zaktualizować postęp
             await this.loadMoviesData();
         } catch (error) {
-            console.error('Error marking all episodes as watched:', error);
+            console.error('Błąd podczas oznaczania wszystkich odcinków jako obejrzanych:', error);
             // Nie pokazuj notyfikacji błędu - to operacja w tle
         }
     }
@@ -4152,7 +4152,7 @@ class MovieTracker {
                     const userTheme = data.user && data.user.theme_preference ? data.user.theme_preference : 'light';
                     localStorage.setItem('theme', userTheme);
                     
-                    // Reload page to show main app
+                    // Przeładuj stronę z nowym stanem zalogowania
                     location.reload();
                 } else {
                     this.showAuthError(data.error);
@@ -4213,7 +4213,7 @@ class MovieTracker {
     }
 
     logout() {
-        // Clear token check interval
+        // Wyczyść interwał sprawdzający token
         if (this.tokenCheckInterval) {
             clearInterval(this.tokenCheckInterval);
         }
@@ -4243,13 +4243,13 @@ class MovieTracker {
         document.getElementById('add-challenge-btn').addEventListener('click', () => this.showAdminChallengeModal());
         document.getElementById('add-badge-btn').addEventListener('click', () => this.showAdminBadgeModal());
 
-        // Bulk delete buttons
+        // Masowe usuwanie zaznaczonych elementów
         document.getElementById('delete-selected-movies-btn').addEventListener('click', () => this.bulkDeleteMovies());
         document.getElementById('delete-selected-challenges-btn').addEventListener('click', () => this.bulkDeleteChallenges());
         document.getElementById('delete-selected-badges-btn').addEventListener('click', () => this.bulkDeleteBadges());
         document.getElementById('delete-selected-reviews-btn').addEventListener('click', () => this.bulkDeleteReviews());
 
-        // Select all checkboxes
+        // Zaznacz wszystkie checkboxy
         document.getElementById('select-all-movies').addEventListener('change', (e) => {
             document.querySelectorAll('.movie-checkbox').forEach(cb => cb.checked = e.target.checked);
             this.updateBulkDeleteButton('movies');
@@ -4308,7 +4308,7 @@ class MovieTracker {
             this.saveSeasonsConfig();
         });
         
-        // Show/hide series fields based on type
+        // Pokaż/ukryj pola w zależności od typu produkcji
         const adminMovieType = document.getElementById('admin-movie-type');
         if (adminMovieType) {
             adminMovieType.addEventListener('change', (e) => {
@@ -4318,7 +4318,7 @@ class MovieTracker {
                 
                 document.getElementById('series-fields').style.display = isSeries ? 'block' : 'none';
                 
-                // Update duration field label based on type
+                // Zaktualizuj etykietę czasu trwania
                 if (isSeries) {
                     durationLabel.textContent = 'Średni czas trwania odcinka (minuty):';
                 } else {
@@ -4338,19 +4338,19 @@ class MovieTracker {
     }
 
     switchAdminTab(tab) {
-        // Update tab buttons
+        // zaktualizuj aktywny przycisk zakładki
         document.querySelectorAll('.admin-tab-btn').forEach(btn => {
             btn.classList.remove('active');
         });
         document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
 
-        // Update tab content
+        // Zaktualizuj zawartość zakładki
         document.querySelectorAll('.admin-tab-content').forEach(content => {
             content.classList.remove('active');
         });
         document.getElementById(`admin-${tab}-tab`).classList.add('active');
 
-        // Load data for the tab
+        // Załaduj dane dla wybranej zakładki
         if (tab === 'movies') this.loadAdminMovies();
         else if (tab === 'challenges') this.loadAdminChallenges();
         else if (tab === 'badges') this.loadAdminBadges();
@@ -4358,7 +4358,7 @@ class MovieTracker {
     }
 
     async loadAdminData() {
-        // Load data for the currently active tab
+        // Załaduj dane dla aktualnie aktywnej zakładki
         const activeTab = document.querySelector('.admin-tab-btn.active').dataset.tab;
         this.switchAdminTab(activeTab);
     }
@@ -4569,18 +4569,18 @@ class MovieTracker {
             document.getElementById('admin-movie-title').value = movie.title;
             document.getElementById('admin-movie-type').value = movie.media_type;
             
-            // Extract year/year-range/full date from release_date field
+            // Wydobycie roku z release_date lub year
             let yearValue = '';
             if (movie.release_date) {
                 const raw = String(movie.release_date);
-                // If series and the release_date is a range, use range string
+                // Dla seriali pozwól na zakresy lat (np. 2015-2020)
                 if (movie.media_type === 'series' && /[-–—]/.test(raw)) {
                     yearValue = raw;
                 } else {
-                    // Use full release_date if it's a valid date format (YYYY-MM-DD or YYYY-MM)
-                    // Otherwise extract just the year
+                    // Użyj pełnej daty release_date, jeśli jest w poprawnym formacie (YYYY-MM-DD lub YYYY-MM)
+                    // W przeciwnym razie wydobądź tylko rok
                     if (/^\d{4}-\d{2}(-\d{2})?$/.test(raw)) {
-                        yearValue = raw; // Keep full date
+                        yearValue = raw; // pełna data
                     } else {
                         const yearMatch = raw.match(/^(\d{4})/);
                         yearValue = yearMatch ? yearMatch[1] : raw;
@@ -4592,7 +4592,7 @@ class MovieTracker {
             console.debug('Prefilling admin movie year:', yearValue);
             document.getElementById('admin-movie-year').value = yearValue;
             document.getElementById('admin-movie-genre').value = movie.genre || '';
-            // If editing a series, pre-fill duration with average episode length when available
+            // Bazując na typie, ustaw odpowiednio pole duration
             const normalizedType = movie.media_type || movie.type;
             const durationPrefill = normalizedType === 'series' ? (movie.avgEpisodeLength || movie.duration || '') : (movie.duration || '');
             console.debug('Prefilling admin movie duration:', durationPrefill);
@@ -4684,7 +4684,7 @@ class MovieTracker {
             if (response.ok) {
                 const result = await response.json();
                 
-                // Show progress notification for updates
+                // Pokaż powiadomienie zmiany progresu dla seriali
                 if (id) {
                     if (movieType === 'series' && durationValue) {
                         this.showNotification('Aktualizowanie czasu trwania odcinków...', 'info');
@@ -4697,19 +4697,19 @@ class MovieTracker {
                 
                 this.closeAdminModal('admin-movie-modal');
                 
-                // If it's a new series, open seasons config modal
+                // Jeśli to nowy serial, pokaż modal do konfiguracji sezonów
                 if (!id && movieType === 'series') {
                     const seriesId = result.id;
                     const seasonCount = data.totalSeasons;
                     this.showSeasonsConfigModal(seriesId, seasonCount, data.title);
                 } else {
                     this.loadAdminMovies();
-                    // Also refresh global movies list so UI reflects new durations/years
+                    // Odśwież dane filmów na stronie głównej
                     try { await this.loadMoviesData(); } catch (e) { /* ignore */ }
                 }
                 
                 // Odśwież kalendarz aby pokazać nowe premiery
-                try { await this.generateCalendar(); } catch (e) { console.debug('Calendar not available'); }
+                try { await this.generateCalendar(); } catch (e) { console.debug('Kalendarz niedostępny'); }
             } else {
                 const error = await response.json();
                 this.showNotification(error.error || 'Błąd podczas zapisywania', 'error');
@@ -4779,7 +4779,7 @@ class MovieTracker {
             container.innerHTML = '<p>Brak odcinków do edycji.</p>';
             return;
         }
-        // Group by season
+        // Grupuj odcinki według sezonów
         const seasons = {};
         data.episodes.forEach(ep => {
             if (!seasons[ep.seasonNumber]) seasons[ep.seasonNumber] = [];
@@ -4822,7 +4822,7 @@ class MovieTracker {
             container.appendChild(seasonDiv);
         });
 
-        // Attach event handlers for save buttons and bulk save
+        // Bind przyciski zapisu
         const saveBtns = container.querySelectorAll('.admin-episode-save-btn');
         saveBtns.forEach(btn => {
             btn.addEventListener('click', async (e) => {
@@ -5342,7 +5342,7 @@ class MovieTracker {
         title.textContent = `Konfiguracja sezonów - ${seriesTitle}`;
         document.getElementById('admin-seasons-series-id').value = seriesId;
         
-        // Generate inputs for each season
+        // Wygeneruj pola dla każdego sezonu
         container.innerHTML = '';
         for (let i = 1; i <= seasonCount; i++) {
             const existingSeason = existingSeasons?.find(s => s.season_number === i);
@@ -5402,23 +5402,23 @@ class MovieTracker {
         document.getElementById(modalId).style.display = 'none';
     }
 
-    // Admin password verification
+    // Weryfikacja hasła administratora
     showAdminPasswordPrompt() {
         const modal = document.getElementById('admin-password-modal');
         const passwordInput = document.getElementById('admin-password-input');
         const errorDiv = document.getElementById('admin-password-error');
         
-        // Clear previous input and errors
+        // Resetuj pole i błędy
         passwordInput.value = '';
         errorDiv.style.display = 'none';
         
-        // Show modal
+        // Pokaż modal
         modal.style.display = 'block';
         
-        // Focus on password input
+        // Ustaw fokus na pole hasła
         setTimeout(() => passwordInput.focus(), 100);
         
-        // Setup form submission (remove old listeners first)
+        // Ustaw obsługę formularza (Użyj cloneNode, aby usunąć stare nasłuchiwacze)
         const form = document.getElementById('admin-password-form');
         const newForm = form.cloneNode(true);
         form.parentNode.replaceChild(newForm, form);
@@ -5429,7 +5429,7 @@ class MovieTracker {
             this.verifyAdminPassword(password);
         });
         
-        // Setup close buttons
+        // Obsługa przycisków zamykania
         modal.querySelectorAll('.close').forEach(btn => {
             btn.addEventListener('click', () => {
                 modal.style.display = 'none';
@@ -5441,7 +5441,7 @@ class MovieTracker {
         const errorDiv = document.getElementById('admin-password-error');
         
         try {
-            // Try to login with current user's email/nickname and provided password
+            // Spróbuj zalogować się za pomocą emaila/nazwy użytkownika i podanego hasła
             const loginData = {
                 emailOrUsername: this.currentUser.email,
                 password: password
@@ -5454,13 +5454,13 @@ class MovieTracker {
             });
 
             if (response.ok) {
-                // Password is correct
+                // Hasło poprawne
                 this.adminVerified = true;
                 document.getElementById('admin-password-modal').style.display = 'none';
                 this.showNotification('Dostęp przyznany', 'success');
                 this.showSection('admin');
             } else {
-                // Show error in modal
+                // Pokaż błąd w modalu
                 errorDiv.textContent = 'Nieprawidłowe hasło';
                 errorDiv.style.display = 'block';
             }
@@ -5471,7 +5471,7 @@ class MovieTracker {
         }
     }
 
-    // Bulk delete functions
+    // ============ USUWANIE HURTOWE =============
     updateBulkDeleteButton(type) {
         const checkboxes = document.querySelectorAll(`.${type.slice(0, -1)}-checkbox:checked`);
         const button = document.getElementById(`delete-selected-${type}-btn`);
@@ -5481,7 +5481,7 @@ class MovieTracker {
             button.style.display = checkboxes.length > 0 ? 'inline-block' : 'none';
         }
         
-        // Update select-all checkbox state
+        // Aktualizuj stan checkboxa "Zaznacz wszystko"
         if (selectAllCheckbox) {
             const allCheckboxes = document.querySelectorAll(`.${type.slice(0, -1)}-checkbox`);
             selectAllCheckbox.checked = allCheckboxes.length > 0 && checkboxes.length === allCheckboxes.length;

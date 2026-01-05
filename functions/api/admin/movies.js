@@ -137,7 +137,7 @@ async function handleCreateMovie(db, request, corsHeaders) {
     const episodesPerSeason = data.episodesPerSeason || (data.type === 'series' ? 10 : 1);
     const totalEpisodes = data.type === 'series' ? totalSeasons * episodesPerSeason : 1;
 
-    // Build INSERT dynamically to avoid including columns that might not exist (e.g., duration) — don't modify schema here
+    // Buduj INSERT dynamicznie, aby uniknąć dołączania kolumn, które mogą nie istnieć (np. duration) — nie modyfikując schematu DB
     const insertCols = ['title','media_type','release_date','genre','poster_url','trailer_url','description','total_seasons','total_episodes'];
     const insertPlaceholders = ['?','?','?','?','?','?','?','?','?'];
     const insertValues = [
@@ -168,7 +168,7 @@ async function handleCreateMovie(db, request, corsHeaders) {
     // Jeśli to serial, utwórz sezony i odcinki
     if (data.type === 'series') {
       console.log('[admin/movies] Received data.duration:', data.duration, 'type:', typeof data.duration);
-      // Use provided duration for episodes, or default to 45
+      // Użyj podanej duration dla odcinków lub domyślnie 45
         let episodeDuration = data.duration !== undefined ? Number(data.duration) : 45;
         if (Number.isNaN(episodeDuration)) episodeDuration = 45;
       console.log(`[admin/movies] Creating series: episodeDuration=${episodeDuration}`);
@@ -242,7 +242,7 @@ async function handleCreateMovie(db, request, corsHeaders) {
 // Zaktualizuj istniejący film
 async function handleUpdateMovie(db, request, corsHeaders) {
   const data = await request.json();
-  // If the ID was sent in the URL as /api/admin/movies/:id, allow that.
+  // Spróbuj wyodrębnić ID z URL, jeśli nie podano w ładunku
   const url = new URL(request.url);
   const pathParts = url.pathname.split('/');
   const pathId = pathParts[pathParts.length - 1] !== 'movies' ? pathParts[pathParts.length - 1] : null;
@@ -256,7 +256,7 @@ async function handleUpdateMovie(db, request, corsHeaders) {
     });
   }
 
-  // Fetch existing movie to know the current media_type for cases where `data.type` isn't provided
+  // Pobierz istniejący film, aby znać aktualny media_type na wypadek, gdyby `data.type` nie było podane
   const existingMovie = await db.prepare('SELECT id, media_type FROM movies WHERE id = ?').bind(data.id).first();
   const existingType = existingMovie ? existingMovie.media_type : null;
   const updates = [];
@@ -290,21 +290,21 @@ async function handleUpdateMovie(db, request, corsHeaders) {
     updates.push('description = ?');
     params.push(data.description);
   }
-  // Store duration value before processing for later use with episodes
+  // Przechowaj wartość duration przed dalszym przetwarzaniem, aby później użyć jej z odcinkami
   let episodeDuration = null;
   if (data.duration !== undefined) {
     episodeDuration = Number(data.duration);
     if (Number.isNaN(episodeDuration)) episodeDuration = null;
-    // Only store duration on movies if the movies table supports duration column
+    // Przechowuj duration w movies tylko jeśli tabela movies ma kolumnę duration
     const hasMoviesDuration = await hasColumn(db, 'movies', 'duration');
-    // For movies duration should be minutes; for series it should be null in movies table
-    // Determine whether this film is treated as series or movie; prefer provided data.type then the existing movie type
+    // Dla filmów powinny być przechowywane wartości duration, dla seriali będzie to NULL
+    // Określ, czy ten film jest traktowany jako serial czy film; preferuj podany data.type, a następnie istniejący typ filmu
     const isSeries = (data.type !== undefined) ? (data.type === 'series') : (existingType === 'series');
     if (hasMoviesDuration) {
       updates.push('duration = ?');
       params.push(isSeries ? null : episodeDuration);
     } else {
-      // If the target is a movie and the DB schema doesn't support duration, return an informative error
+      // Jeśli celem jest film, a schemat DB nie obsługuje duration, zwróć informacyjny błąd
       if (!isSeries) {
         return new Response(JSON.stringify({ error: 'Movies table missing duration column; please apply DB migration to support updating movie duration.' }), {
           status: 400,
@@ -315,8 +315,8 @@ async function handleUpdateMovie(db, request, corsHeaders) {
     }
   }
 
-  // If there are no direct movie fields being updated but a new duration was provided
-  // and the intent is to propagate it to episodes for a series, we should still proceed.
+  // Jeśli nie ma bezpośrednich aktualizacji filmu, ale podano nową wartość duration
+  // i celem jest propagacja do odcinków serialu, powinniśmy kontynuować.
   const isSeriesForPropagate = (data.type !== undefined) ? (data.type === 'series') : (existingType === 'series');
   if (updates.length === 0 && !(episodeDuration !== null && isSeriesForPropagate)) {
     return new Response(JSON.stringify({ error: 'No fields to update' }), {
@@ -327,7 +327,7 @@ async function handleUpdateMovie(db, request, corsHeaders) {
 
   params.push(data.id);
   
-  // Check presence of movies.duration column (don't alter schema here)
+  // Sprawdź obecność kolumny duration w tabeli movies (nie zmieniaj schematu tutaj)
   const hasMoviesDuration = await hasColumn(db, 'movies', 'duration');
   console.log('[admin/movies] Updates:', updates, 'Params:', params);
   if (updates.length > 0) {
@@ -338,9 +338,9 @@ async function handleUpdateMovie(db, request, corsHeaders) {
     console.log('[admin/movies] No direct movie updates to run, skipping UPDATE movies query');
   }
 
-  // If admin provided duration for a series, propagate it to all episodes
+  // Jeśli admin podał duration dla serialu, propaguj ją do wszystkich odcinków
   try {
-    // Decide if we should propagate episode duration: if the target is series and an episodeDuration was provided
+    // Określ, czy powinniśmy propagować duration do odcinków: jeśli celem jest serial i podano episodeDuration
     const isSeriesForPropagate = (data.type !== undefined) ? (data.type === 'series') : (existingType === 'series');
     console.log(`[admin/movies] Propagate duration? episodeDuration=${episodeDuration}, isSeriesForPropagate=${isSeriesForPropagate}`);
     if (episodeDuration !== null && isSeriesForPropagate) {

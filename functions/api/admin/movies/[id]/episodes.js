@@ -1,4 +1,4 @@
-// Admin endpoint to fetch and update episodes for a series
+// Endpoint admin API do zarządzania odcinkami seriali
 async function getUserIdFromRequest(request) {
   const authHeader = request.headers.get('Authorization');
   if (!authHeader || !authHeader.startsWith('Bearer ')) return null;
@@ -17,7 +17,7 @@ async function checkAdminRole(db, userId) {
   return user && user.role === 'admin';
 }
 
-// Determine if episodes table has display_number column — do NOT alter DB here
+// Sprawdza, czy kolumna display_number istnieje w tabeli episodes nie modyfikując bazy danych
 async function hasEpisodesDisplayColumn(db) {
   try {
     const info = await db.prepare("PRAGMA table_info(episodes)").all();
@@ -69,7 +69,7 @@ async function handleGetAdminEpisodes(db, seriesId, corsHeaders) {
     const series = await db.prepare('SELECT id, title FROM movies WHERE id = ? AND media_type = ?').bind(seriesId, 'series').first();
     if (!series) return new Response(JSON.stringify({ error: 'Series not found' }), { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
-    // Conditionally query display_number only when the DB contains the column
+    // Warunkowo pobierz display_number tylko jeśli kolumna istnieje w DB
     const hasDisplay = await hasEpisodesDisplayColumn(db);
     const selectCols = hasDisplay ? 'e.id as episode_id, e.season_id, s.season_number, e.episode_number, e.title as episode_title, e.description, e.air_date, e.duration, e.display_number' : 'e.id as episode_id, e.season_id, s.season_number, e.episode_number, e.title as episode_title, e.description, e.air_date, e.duration';
     const rows = await db.prepare(`
@@ -92,14 +92,14 @@ async function handleGetAdminEpisodes(db, seriesId, corsHeaders) {
       duration: r.duration
     })) : [];
 
-    // If display_number column exists but some rows have NULL display_number, backfill them
-    // so that newly-created episodes (or existing ones after migration) have values.
+    // Jeśli kolumna display_number istnieje, ale niektóre wiersze mają NULL w display_number, uzupełnij je
+    // aby nowo utworzone odcinki (lub istniejące po migracji) miały wartości.
     try {
       if (hasDisplay) {
         const missing = await db.prepare(`SELECT COUNT(*) as cnt FROM episodes e JOIN seasons s ON e.season_id = s.id WHERE s.series_id = ? AND (e.display_number IS NULL OR e.display_number = '')`).bind(seriesId).first();
         const missingCount = (missing && missing.cnt) ? Number(missing.cnt) : 0;
         if (missingCount > 0) {
-          // Backfill using season_number + episode_number
+          // Uzupełnij używając season_number + episode_number
           await db.prepare(`
             UPDATE episodes
             SET display_number = 'S' || printf('%02d', (SELECT season_number FROM seasons WHERE id = episodes.season_id)) || ' - E' || printf('%03d', episodes.episode_number)
@@ -110,7 +110,7 @@ async function handleGetAdminEpisodes(db, seriesId, corsHeaders) {
       }
     } catch (e) {
       console.warn('[admin/episodes] Error during display_number backfill:', e);
-      // Non-fatal, continue to return the rows; they'll still have displayNumber computed in response.
+      // Kontynuuj bez przerywania odpowiedzi użytkownikowi - to nie jest krytyczne
     }
 
     return new Response(JSON.stringify({ series: { id: series.id, title: series.title }, episodes, hasDisplay }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
@@ -125,7 +125,7 @@ async function handleUpdateEpisode(db, request, corsHeaders) {
     const data = await request.json();
     console.log('[admin/episodes] PUT payload:', JSON.stringify(data).slice(0, 1000));
     if (!data || !data.id) return new Response(JSON.stringify({ error: 'Episode id required' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-    // Check if display_number column exists — do NOT alter DB here
+    // Sprawdza, czy kolumna display_number istnieje w tabeli episodes nie modyfikując bazy danych
     const hasDisplay = await hasEpisodesDisplayColumn(db);
 
     const updates = [];

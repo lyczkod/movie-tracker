@@ -153,7 +153,7 @@ async function handleGet(db, request, url, corsHeaders) {
             console.warn('Could not fetch watched episodes:', e);
           }
         }
-            // Compute average episode duration for series (from episodes.duration) if available
+            // Oblicz średnią długość odcinka dla serialu
             let avgEpisodeLength = null;
             if (row.type === 'series') {
               try {
@@ -172,12 +172,12 @@ async function handleGet(db, request, url, corsHeaders) {
             }
 
         {
-          // sanitize year: ensure reasonable value or null
+          // year: upewnij się, że jest liczbą i w rozsądnym zakresie
           const rawYear = parseInt(row.year);
           const currentYear = new Date().getFullYear();
           const year = (Number.isFinite(rawYear) && rawYear >= 1800 && rawYear <= currentYear + 5) ? rawYear : null;
 
-          // movie duration: prefer DB column if present, otherwise null (do not default to 120)
+          // movie duration: preferuj wartość z movies.duration jeśli dostępna
           const movieDuration = (row.duration !== undefined && row.duration !== null) ? Number(row.duration) : null;
 
           return {
@@ -191,12 +191,11 @@ async function handleGet(db, request, url, corsHeaders) {
             status: row.status || 'watched',
             watchedDate: row.watchedDate || null,
             description: row.description || '',
-            // Expose canonical `poster_url` (if available) and keep `poster` for backwards compatibility
+            // Udostępnij plakat w różnych formatach kluczy
             poster_url: normalizePosterUrl(row.poster_url || row.poster) || null,
             poster: normalizePosterUrl(row.poster_url || row.poster) || `https://placehold.co/200x300/4CAF50/white/png?text=${encodeURIComponent(row.title)}`,
-            // For movies prefer explicit movieDuration; for series expose avgEpisodeLength if available
+            // Dla filmów preferuj explicit movieDuration; dla seriali udostępnij avgEpisodeLength jeśli dostępne
             duration: row.type === 'movie' ? movieDuration : (avgEpisodeLength || null),
-            // no trailer_url — duration is used for movies, series durations come from episodes
             review: row.review || '',
             // Pola specyficzne dla seriali
             totalSeasons: row.total_seasons || null,

@@ -141,7 +141,7 @@ export async function onRequest(context) {
         year: year,
         release_date: row.release_date || null,
         genre: normalizeGenre(row.genre) || 'Unknown',
-        // expose canonical poster_url and keep poster fallback
+        // Znormalizuj URL plakatu w różnych formatach kluczy
         poster_url: normalizePosterUrl(row.poster) || null,
         poster: normalizePosterUrl(row.poster) || `https://placehold.co/200x300/4CAF50/white/png?text=${encodeURIComponent(row.title)}`,
         trailer_url: row.trailer_url || null,

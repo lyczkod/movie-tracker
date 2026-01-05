@@ -77,13 +77,13 @@ export async function onRequest(context) {
       LIMIT ?
     `).bind(userId, userId, userId, userId, `%${query}%`, limit).all();
 
-    // Normalize results to include both snake_case and camelCase fields
+    // Normalizuj wyniki, aby zawierały zarówno pola w snake_case, jak i camelCase
     const users = result.results.map(row => {
-      // Ensure avatar uses https when possible
+      // Upewnij się, że avatar używa https, jeśli to możliwe
       let avatar = (row.avatar_url && String(row.avatar_url).trim()) ? String(row.avatar_url).trim() : null;
       if (avatar && avatar.startsWith('http://')) avatar = avatar.replace('http://', 'https://');
 
-      // If no avatar provided, use default avatar
+      // Jeśli nie podano avatara, użyj domyślnego avatara
       if (!avatar) {
         avatar = '/images/default-avatar.png';
       }
@@ -95,7 +95,7 @@ export async function onRequest(context) {
         friendship_id: row.friendship_id,
         nickname: row.nickname,
         description: row.description,
-        // provide both conventions to make client tolerant
+        // Udostępnij avatar w różnych formatach kluczy
         avatar_url: avatar,
         avatarUrl: avatar,
         avatar: avatar,

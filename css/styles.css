@@ -1,4 +1,4 @@
-/* Reset and base styles */
+/* Resetuj marginesy, padding i box-sizing */
 * {
     margin: 0;
     padding: 0;
@@ -16,13 +16,13 @@
     display: flex;
     align-items: center;
     gap: 1rem;
-    position: relative; /* to position actions inside header */
-    flex-wrap: wrap; /* allow elements to wrap to next row on small widths */
+    position: relative; /* aby pozycjonować akcje wewnątrz nagłówka */
+    flex-wrap: wrap; /* pozwól elementom zawijać się do następnego wiersza na małych szerokościach */
 }
 
 .profile-actions-top {
     position: absolute;
-    right: 72px; /* move left from close 'x' (20px) to avoid overlap */
+    right: 72px; /* przesunięcie w lewo od przycisku zamknięcia 'x' (20px), aby uniknąć nakładania się */
     top: 18px;
     display: flex;
     gap: 0.5rem;
@@ -33,7 +33,7 @@
     .profile-actions-top { position: static; margin-top: 1rem; }
 }
 
-/* If profile actions are inside a modal, keep them in the header to the right so they don't affect flow */
+/* Jeśli akcje profilu znajdują się wewnątrz modalu, utrzymaj je w nagłówku po prawej stronie, aby nie wpływały na układ */
 .modal-content .profile-actions-top {
     position: absolute;
     right: 72px;
@@ -44,7 +44,7 @@
     .modal-content .profile-actions-top { position: static; width: 100%; justify-content: flex-end; margin-top: 0.5rem; }
 }
 
-/* Stack profile header content vertically on mobile screens */
+/* Stosuj układ pionowy nagłówka profilu na ekranach mobilnych */
 @media (max-width: 720px) {
     .profile-header {
         flex-direction: column;
@@ -92,7 +92,7 @@
     }
 }
 
-/* Footer */
+/* Stopka */
 .site-footer {
     background-color: var(--surface-color);
     border-top: 1px solid var(--border-color);
@@ -116,7 +116,7 @@
 }
 
 :root {
-    /* Light theme colors */
+    /* Kolory motywu jasnego */
     --primary-color: #2c3e50;
     --secondary-color: #3498db;
     --accent-color: #e74c3c;
@@ -130,7 +130,7 @@
 }
 
 [data-theme="dark"], .dark-theme {
-    /* Dark theme colors */
+    /* Kolory motywu ciemnego */
     --primary-color: #34495e;
     --secondary-color: #5dade2;
     --accent-color: #e67e22;
@@ -146,9 +146,8 @@ html, body {
     height: 100%;
 }
 
-/* Make the body a column flex container so the footer is anchored to the
-   bottom of the viewport when content is short, while pages with more
-   content still scroll naturally. */
+/* Zrób stopkę przyklejoną do dolnej krawędzi widoku, gdy zawartość jest krótka, podczas gdy strony z większą
+   zawartością nadal przewijają się naturalnie. */
 body {
     display: flex;
     flex-direction: column;
@@ -160,7 +159,7 @@ body {
     transition: var(--transition);
 }
 
-/* Navigation */
+/* Nawigacja */
 .navbar {
     background-color: var(--surface-color);
     box-shadow: var(--shadow);
@@ -257,10 +256,10 @@ body {
     transform: rotate(45deg) translate(-5px, -6px);
 }
 
-/* Main content */
+/* Główna zawartość */
 .main-content {
-    /* Ensure main content stretches to fill remaining space between
-       fixed navbar and footer so the footer is visible on short pages */
+    /* Zapewnij, że główna zawartość rozciąga się, aby wypełnić pozostałą przestrzeń między
+       górnym paskiem nawigacyjnym a stopką aby stopka była widoczna na urządzeniach mobilnych */
     flex: 1 0 auto;
     margin-top: 70px;
 }
@@ -281,7 +280,7 @@ body {
 }
 
 @media (max-width: 520px) {
-    /* Reduce horizontal padding for very small screens to avoid content overflow */
+    /* Redukuj poziome paddingi dla bardzo małych ekranów, aby uniknąć przepełnienia zawartości */
     .container { padding: 0 1rem; }
 }
 
@@ -303,7 +302,7 @@ h3 {
     color: var(--text-color);
 }
 
-/* Dashboard styles */
+/* Style Dashboard */
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -383,7 +382,7 @@ h3 {
     font-size: 0.9rem;
 }
 
-/* Search styles */
+/* Style wyszukiwania */
 .search-container {
     margin-bottom: 2rem;
 }
@@ -498,7 +497,7 @@ h3 {
     max-height: 2.6em;
 }
 
-/* Admin panel counters (small stat tiles matching site style) */
+/* Liczniki panelu administracyjnego (małe kafelki statystyk dopasowane do stylu strony) */
 .admin-stats {
     margin-top: 10px;
     display: flex;
@@ -530,7 +529,7 @@ h3 {
     color: var(--text-color);
 }
 
-/* Challenges list styles */
+/* Style listy wyzwań */
 .challenges-list {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -678,7 +677,7 @@ h3 {
     gap: 0.25rem;
 }
 
-/* Empty state common styles */
+/* Puste stany - wspólne style */
 .empty-state {
     display: flex;
     flex-direction: column;
@@ -699,15 +698,15 @@ h3 {
     color: var(--text-secondary);
 }
 
-/* Make action buttons in empty states sit slightly away from the modal edge */
+/* Przenieś przyciski akcji w stanach pustych nieco dalej od krawędzi modalu */
 .empty-state button,
 .empty-state .btn,
 .empty-state .btn-primary {
     margin-left: 8px;
 }
 
-/* Slightly more padding for add-friend modal contents */
-/* Slightly more padding for add-friend modal contents and center header */
+/* Nieco więcej paddingu dla zawartości modalu dodawania znajomego */
+/* Nieco więcej paddingu dla zawartości modalu dodawania znajomego i wyśrodkowanie nagłówka */
 #add-friend-modal .modal-content {
     padding: 0.5rem 0.75rem;
 }
@@ -720,13 +719,13 @@ h3 {
     padding: 1rem;
 }
 
-/* Center empty content inside lists */
+/* Wyśrodkuj pustą zawartość wewnątrz list */
 .friends-list.empty-center,
 .badges-grid.empty-center,
 .challenges-list.empty-center {
     display: flex;
     justify-content: center;
-    align-items: flex-start; /* keep it near top but centered horizontally */
+    align-items: flex-start; /* utrzymuj blisko góry, ale wyśrodkowane poziomo */
     padding: 1.25rem 0;
 }
 
@@ -741,7 +740,7 @@ h3 {
     color: #f39c12;
 }
 
-/* Calendar styles */
+/* Style kalendarza */
 .calendar {
     background-color: var(--surface-color);
     border-radius: 10px;
@@ -866,7 +865,7 @@ h3 {
     background-color: #2ecc71; /* Zielony dla odcinków */
 }
 
-/* Statistics styles */
+/* Style statystyk */
 .charts-container {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -885,7 +884,7 @@ h3 {
     height: auto;
 }
 
-/* Profile styles */
+/* Style profilu */
 .profile-header {
     background-color: var(--surface-color);
     /* mniejsze padding aby sekcja profilowa nie wypychała treści zbyt daleko w dół */
@@ -965,7 +964,7 @@ h3 {
     font-size: 0.9rem;
 }
 
-/* Profile Tabs */
+/* Zakładki profilu */
 .profile-tabs {
     display: flex;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -1005,7 +1004,7 @@ h3 {
     display: block;
 }
 
-/* Badges Section */
+/* Sekcja odznak */
 .badges-header {
     display: flex;
     justify-content: space-between;
@@ -1046,13 +1045,13 @@ h3 {
     position: relative;
 }
 
-/* Safe defaults to avoid overflowing the layout */
+/* Bezpieczne domyślne ustawienia, aby uniknąć przekraczania układu */
 .profile-header, .profile-info-top, .profile-info, .profile-avatar-large, .profile-stats, .badges-list, .badge-item {
     max-width: 100%;
     box-sizing: border-box;
 }
 
-/* Allow long text to wrap in the profile modal to prevent horizontal overflow */
+/* Pozwól na zawijanie długiego tekstu w modalu profilu, aby zapobiec poziomemu przewijaniu */
 .profile-modal .profile-info p, .profile-modal .profile-info h2, .profile-description {
     word-wrap: break-word;
     overflow-wrap: break-word;
@@ -1134,7 +1133,7 @@ h3 {
     font-size: 1.1rem;
 }
 
-/* All Badges Section */
+/* Sekcja wszystkich odznak */
 .badges-stats {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -1273,7 +1272,7 @@ h3 {
     border-color: var(--secondary-color);
 }
 
-/* Friends Section */
+/* Sekcja znajomych */
 .friends-header {
     display: flex;
     justify-content: space-between;
@@ -1481,7 +1480,7 @@ h3 {
     margin-bottom: 1rem;
 }
 
-/* Settings Section */
+/* Sekcja ustawień */
 .settings-container {
     max-width: 800px;
 }
@@ -1562,7 +1561,7 @@ h3 {
     margin-bottom: 0.5rem;
 }
 
-/* Friend Search Modal */
+/* Modal wyszukiwania znajomych */
 .search-friend-container {
     padding: 1rem;
 }
@@ -1690,7 +1689,7 @@ h3 {
     border-color: var(--secondary-color);
 }
 
-/* Modal styles */
+/* Style modali */
 .modal {
     display: none;
     position: fixed;
@@ -1739,7 +1738,7 @@ h3 {
     padding-bottom: 2rem;
 }
 
-/* When using mobile class, make modal use the available viewport more effectively */
+/* Kiedy używana jest klasa mobile, modal wykorzystuje dostępną przestrzeń widoku bardziej efektywnie */
 .modal.mobile .modal-content {
     max-height: 90vh;
     margin: 0.5rem auto;
@@ -1876,7 +1875,7 @@ h3 {
 
 .trailer-wrapper {
     position: relative;
-    padding-bottom: 56.25%; /* 16:9 aspect ratio */
+    padding-bottom: 56.25%; /* 16:9 */
     height: 0;
     overflow: hidden;
     border-radius: 8px;
@@ -1994,7 +1993,7 @@ h3 {
     background-color: #c0392b;
 }
 
-/* Series Episodes Modal */
+/* Modal odcinków serii */
 #series-episodes-modal .modal-content {
     max-width: 900px;
 }
@@ -2107,7 +2106,7 @@ h3 {
     color: var(--text-secondary);
 }
 
-/* Episodes hint */
+/* Wskazówka dotycząca odcinków */
 .episodes-hint {
     display: flex;
     align-items: center;
@@ -2141,7 +2140,7 @@ h3 {
     }
 }
 
-/* Admin Episodes Modal */
+/* Modal odcinków administratora */
 #admin-episodes-modal .modal-content { max-width: 900px; }
 #admin-episodes-modal .modal-body { max-height: 70vh; overflow-y: auto; }
 .admin-season-group { margin-bottom: 1rem; border: 1px solid var(--border-color); padding: 0.75rem; border-radius: 6px; }
@@ -2152,14 +2151,14 @@ h3 {
 .admin-episode-fields label { font-size: 0.8rem; color: var(--text-secondary); }
 .admin-episode-actions { display: flex; align-items: center; gap: 8px; }
 
-/* Tablet responsive - wykres statystyk 2 kolumny */
+/* Responsywność tabletu - wykres statystyk 2 kolumny */
 @media (max-width: 1200px) {
     .charts-container {
         grid-template-columns: repeat(2, 1fr);
     }
 }
 
-/* Responsive design */
+/* Responsywność */
 @media (max-width: 768px) {
     .hamburger {
         display: flex;
@@ -2273,7 +2272,7 @@ h3 {
     }
 }
 
-/* Loading animation */
+/* Animacja ładowania */
 .loading {
     display: inline-block;
     width: 20px;
@@ -2288,7 +2287,7 @@ h3 {
     to { transform: rotate(360deg); }
 }
 
-/* Scrollbar styling */
+/* Stylizacja paska przewijania */
 ::-webkit-scrollbar {
     width: 8px;
 }
@@ -2306,12 +2305,12 @@ h3 {
     background: var(--secondary-color);
 }
 
-/* Smooth transitions - only after page load */
+/* Płynne przejścia - tylko po załadowaniu strony */
 body.transitions-enabled * {
     transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
-/* My List Styles */
+/* Style sekcji Moja Lista */
 .my-list-controls {
     display: flex;
     flex-direction: column;
@@ -2553,7 +2552,6 @@ body.transitions-enabled * {
     color: #f39c12;
 }
 
-/* Grid series progress */
 .grid-series-progress {
     position: absolute;
     bottom: 0;
@@ -2688,7 +2686,7 @@ body.transitions-enabled * {
     color: var(--text-secondary);
 }
 
-/* Responsive adjustments for My List */
+/* Responsywność sekcji Moja Lista */
 @media (max-width: 768px) {
     .my-list-controls {
         padding: 1rem;
@@ -2733,7 +2731,7 @@ body.transitions-enabled * {
 }
 
 /* ================================
-   AUTH STYLES 
+        Style Autoryzacji
    ================================ */
 .auth-container {
     position: fixed;
@@ -2843,7 +2841,7 @@ body.transitions-enabled * {
     font-weight: 500;
 }
 
-/* Admin Panel Styles */
+/* Style panelu administratora */
 .admin-tabs {
     display: flex;
     gap: 1rem;
@@ -2958,7 +2956,7 @@ body.transitions-enabled * {
     opacity: 0.8;
 }
 
-/* Review status badges */
+/* Status recenzji */
 .review-status {
     padding: 0.3rem 0.6rem;
     border-radius: 0.3rem;
@@ -2982,7 +2980,7 @@ body.transitions-enabled * {
     color: #856404;
 }
 
-/* Admin filter */
+/* Filtr administratora */
 .admin-filter {
     display: flex;
     align-items: center;
@@ -3120,7 +3118,7 @@ body.transitions-enabled * {
         padding: 0.5rem;
     }
 
-    /* Badges responsive */
+    /* Odznaki responsywne */
     .badges-stats {
         grid-template-columns: repeat(2, 1fr);
     }
@@ -3149,7 +3147,7 @@ body.transitions-enabled * {
     }
 }
 
-/* Friend Profile Modal Styles */
+/* Style modalnego profilu znajomego */
 .profile-modal {
     max-width: 900px;
 }
@@ -3170,7 +3168,7 @@ body.transitions-enabled * {
     box-shadow: var(--shadow);
 }
 
-/* Modal-specific responsive adjustments to prevent overflow and keep content readable */
+/* Ustawienia responsywne specyficzne dla modala, aby zapobiec przepełnieniu i utrzymać czytelność zawartości na małych ekranach */
 @media (max-width: 720px) {
     .modal-content.profile-modal { width: 96%; max-width: 640px; margin: 1rem auto; overflow-x: hidden; }
     .modal-content.profile-modal .profile-header { flex-direction: column; align-items: flex-start; gap: 0.5rem; padding: 1rem; width: 100%; }
@@ -3365,7 +3363,7 @@ body.transitions-enabled * {
     margin-bottom: 0.25rem;
 }
 
-/* Mobile responsiveness for calendar */
+/* Responsywność na urządzenia mobilne dla kalendarza */
 @media (max-width: 768px) {
     .calendar {
         padding: 1rem;

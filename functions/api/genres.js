@@ -1,5 +1,4 @@
-// Endpoint: return distinct normalized genres present in movies table
-
+// Endpoint zwracający unikalne gatunki filmów
 function normalizeGenre(genre) {
   if (!genre || typeof genre !== 'string') return '';
   return genre.split(/[,;|]+/)
@@ -9,7 +8,7 @@ function normalizeGenre(genre) {
       const key = s.toLowerCase().trim().replace(/_/g, ' ');
       if (key === 'science fiction' || key === 'science_fiction' || key === 'science-fiction' || key === 'sci fi') return 'Sci-Fi';
       if (key === 'drama' || key === 'dramat') return 'Dramat';
-      // Add more mappings if needed
+      // Dodaj więcej reguł normalizacji według potrzeb
       return s.replace(/_/g, ' ');
     })
     .filter(Boolean)
@@ -31,7 +30,7 @@ export async function onRequest(context) {
   if (method !== 'GET') return new Response('Method not allowed', { status: 405, headers: corsHeaders });
 
   try {
-    // Get all non-null genre strings
+    // Pobierz wszystkie niepuste ciągi gatunków
     const result = await env.db.prepare(`SELECT genre FROM movies WHERE genre IS NOT NULL AND genre != ''`).all();
     const unique = new Set();
 
