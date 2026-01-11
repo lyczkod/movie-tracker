@@ -97,8 +97,8 @@ async function getUserIdFromRequest(request) {
   }
 
   try {
-    const token = authHeader.substring(7);
-    const payload = JSON.parse(atob(token));
+    const token = authHeader.substring(7); // usuwa "Bearer"
+    const payload = JSON.parse(atob(token)); // dekoduje Base64
     
     if (payload.exp < Date.now()) {
       return null; // Token wygasł

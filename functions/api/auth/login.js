@@ -116,8 +116,8 @@ async function verifyPassword(password, storedHash) {
   return true;
 }
 
-// Generuj prosty token podobny do JWT
+// Generuj prosty token Base64
 async function generateSimpleToken(userId, email) {
-  const payload = { userId, email, exp: Date.now() + (12 * 60 * 60 * 1000) }; // 12 godzin
-  return btoa(JSON.stringify(payload));
+  const payload = { userId, email, exp: Date.now() + (12 * 60 * 60 * 1000) }; // sesja 12 godzin
+  return btoa(JSON.stringify(payload)); // kodowanie Base64
 }
