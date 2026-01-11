@@ -19,7 +19,7 @@ export async function onRequestPost(context) {
       });
     }
 
-    // Opcjonalna walidacja formatu email - jeśli użytkownik podał coś z @, musi być poprawny email
+    // Walidacja formatu email, musi być poprawny email
     if (emailOrUsername.includes('@')) {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(emailOrUsername)) {

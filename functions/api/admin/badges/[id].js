@@ -132,7 +132,7 @@ async function handleDeleteBadge(db, badgeId, corsHeaders) {
   });
 }
 
-// Wyodrębnij ID użytkownika z tokenu JWT
+// Wyodrębnij ID użytkownika z tokenu autoryzacyjnego
 async function getUserIdFromRequest(request) {
   const authHeader = request.headers.get('Authorization');
   if (!authHeader || !authHeader.startsWith('Bearer ')) {

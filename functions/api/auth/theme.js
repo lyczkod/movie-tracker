@@ -41,7 +41,7 @@ export async function onRequestOptions() {
   });
 }
 
-// Wyciągnij ID użytkownika z nagłówka Authorization (taka sama logika jak w innych endpointach auth)
+// Wyodrębnij ID użytkownika z tokenu autoryzacyjnego
 async function getUserIdFromRequest(request) {
   const authHeader = request.headers.get('Authorization');
   if (!authHeader || !authHeader.startsWith('Bearer ')) {

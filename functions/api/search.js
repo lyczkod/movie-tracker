@@ -168,7 +168,7 @@ export async function onRequest(context) {
   }
 }
 
-// Wyodrębnij ID użytkownika z nagłówka Authorization
+// Wyodrębnij ID użytkownika z tokenu autoryzacyjnego
 async function getUserIdFromRequest(request) {
   const authHeader = request.headers.get('Authorization');
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
